@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../main';
+import { UserContext } from '../routes/Root';
 
 /**
  * Protect the route from unauthorized access

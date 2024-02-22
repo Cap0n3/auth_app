@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { UserContext } from '../main';
+import { UserContext } from '../routes/Root';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {

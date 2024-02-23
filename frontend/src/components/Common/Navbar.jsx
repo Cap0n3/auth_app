@@ -8,22 +8,23 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../../routes/Root';
 import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../../services/userservice';
 
 
 const Nav = () => {
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
 
-    function submitLogout(e) {
+    const handleLogout = async (e) => {
         e.preventDefault();
-        client.post(
-            "/api/logout",
-            { withCredentials: true }
-        ).then(function (res) {
+        try {
+            await logout();
             setIsAuthenticated(false);
             setCurrentUser(null);
             navigate('/');
-        });
+        } catch (error) {
+            console.error('Logout failed:', error.message);
+        }
     }
 
     useEffect(() => {
@@ -53,7 +54,7 @@ const Nav = () => {
                         {isAuthenticated && currentUser ? `Welcome, ${currentUser.username}` : ''}
                     </Typography>
                     {isAuthenticated ?
-                        <Button variant="contained" onClick={e => submitLogout(e)}>Log out</Button> :
+                        <Button variant="contained" onClick={e => handleLogout(e)}>Log out</Button> :
                         <Link to="/signin">
                             <Button variant="contained">Sign In</Button>
                         </Link>

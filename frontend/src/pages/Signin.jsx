@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { UserContext } from '../routes/Root';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../services/userservice';
 
 const SignIn = ({SignInState}) => {
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
@@ -20,29 +21,25 @@ const SignIn = ({SignInState}) => {
     }
     , [isAuthenticated]);
 
-    function submitLogin(e) {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        client.post(
-            "/api/login",
-            {
-                email: email,
-                password: password
-            }
-        ).then(function (res) {
-            console.log("User is authenticated: ", isAuthenticated);
-            console.log("Current user: ", currentUser);
-            console.log("Response: ", res);
+        try {
+            const userData = await login({ email, password });
+            // Handle successful login (e.g., store user data in state or local storage, redirect user, etc.)
+            console.log('User logged in:', userData);
             setIsAuthenticated(true);
-            //setCurrentUser(res.data);
-        });
-    }
+        } catch (error) {
+            // Handle login failure (e.g., display error message to user, log error, etc.)
+            console.error('Login failed:', error.message);
+        }
+    };
 
     return(
         <div>
             <Typography variant="h5" gutterBottom>
                 Sign In
             </Typography>
-            <form onSubmit={e => submitLogin(e)}>
+            <form onSubmit={e => handleLogin(e)}>
                 <FormControl>
                     <TextField 
                         id="signup-email" 

@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { UserContext } from '../routes/Root';
 import { useNavigate } from 'react-router-dom';
+import { signup } from '../services/userservice';
 
 const SignUp = () => {
     // Get client from user context object
@@ -23,32 +24,44 @@ const SignUp = () => {
     , [isAuthenticated]);
     
 
-    function submitRegistration(e) {
-        e.preventDefault();
+    // function submitRegistration(e) {
+    //     e.preventDefault();
 
-        console.log("email: ", email);
-        console.log("username: ", username);
-        console.log("password: ", password);
+    //     console.log("email: ", email);
+    //     console.log("username: ", username);
+    //     console.log("password: ", password);
         
-        client.post(
-            "/api/register",
-            {
-                email: email,
-                username: username,
-                password: password
-            }
-        ).then(function (res) {
-            client.post(
-                "/api/login",
-                {
-                    email: email,
-                    password: password
-                }
-            ).then(function (res) {
-                setIsAuthenticated(true);
-                setCurrentUser(res.data.user);
-            });
-        });
+    //     client.post(
+    //         "/api/register",
+    //         {
+    //             email: email,
+    //             username: username,
+    //             password: password
+    //         }
+    //     ).then(function (res) {
+    //         client.post(
+    //             "/api/login",
+    //             {
+    //                 email: email,
+    //                 password: password
+    //             }
+    //         ).then(function (res) {
+    //             setIsAuthenticated(true);
+    //             setCurrentUser(res.data.user);
+    //         });
+    //     });
+    // }
+
+    const handleRegistration = async (e) => {
+        e.preventDefault();
+        try {
+            const userData = await signup({ email, username, password });
+            console.log('User registered:', userData);
+            setIsAuthenticated(true);
+            setCurrentUser(userData);
+        } catch (error) {
+            console.error('Registration failed:', error.message);
+        }
     }
     
     return (
@@ -56,7 +69,7 @@ const SignUp = () => {
             <Typography variant="h5" gutterBottom>
                 Sign up
             </Typography>
-            <form onSubmit={e => submitRegistration(e)}>
+            <form onSubmit={e => handleRegistration(e)}>
                 <FormControl>
                     <TextField 
                         id="signup-email" 

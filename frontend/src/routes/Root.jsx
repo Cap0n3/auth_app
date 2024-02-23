@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import Nav from '../components/Common/Navbar';
 import { Outlet } from 'react-router-dom';
 import axios from 'axios';
+import { checkAuth } from '../services/userservice';
 
 // Create a user context for the entire app
 export const UserContext = createContext(null);
@@ -21,10 +22,21 @@ export default function Root() {
     });
 
     // Check if the user is authenticated on mount
+    // useEffect(() => {
+    //     client.get("/api/user")
+    //         .then(function (res) {
+    //             setCurrentUser(res.data.user);
+    //             setIsAuthenticated(true);
+    //         })
+    //         .catch(function (error) {
+    //             setIsAuthenticated(false);
+    //         });
+    // }, []);
+
     useEffect(() => {
-        client.get("/api/user")
+        checkAuth()
             .then(function (res) {
-                setCurrentUser(res.data.user);
+                setCurrentUser(res.user);
                 setIsAuthenticated(true);
             })
             .catch(function (error) {
@@ -35,10 +47,10 @@ export default function Root() {
     // If state of the user authentication changes, update the user context (on sign in)
     useEffect(() => {
         if (isAuthenticated) {
-            client.get("/api/user")
+            checkAuth()
                 .then(function (res) {
-                    setCurrentUser(res.data.user);
-                });
+                    setCurrentUser(res.user);
+                })
         }
     }, [isAuthenticated]);
 

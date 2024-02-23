@@ -32,7 +32,7 @@ export default function Root() {
             });
     }, []);
 
-    // If state of the user authentication changes, update the user context
+    // If state of the user authentication changes, update the user context (on sign in)
     useEffect(() => {
         if (isAuthenticated) {
             client.get("/api/user")

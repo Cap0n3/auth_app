@@ -7,11 +7,12 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../../routes/Root';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const Nav = () => {
-    const { client, currentUser, setCurrentUser } = useContext(UserContext);
+    const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const navigate = useNavigate();
 
     function submitLogout(e) {
         e.preventDefault();
@@ -19,11 +20,18 @@ const Nav = () => {
             "/api/logout",
             { withCredentials: true }
         ).then(function (res) {
-            setCurrentUser(false);
-            // REDIRECT TO LANDING PAGE (without react-router-dom)
-            window.location.href = '/';
+            setIsAuthenticated(false);
+            setCurrentUser(null);
+            navigate('/');
         });
     }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            console.log("User is authenticated: ", isAuthenticated);
+            console.log("Current user: ", currentUser);
+        }
+    }, [isAuthenticated]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -41,7 +49,10 @@ const Nav = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Authentication App
                     </Typography>
-                    {currentUser ?
+                    <Typography variant="span" component="div" mr={3}>
+                        {isAuthenticated && currentUser ? `Welcome, ${currentUser.username}` : ''}
+                    </Typography>
+                    {isAuthenticated ?
                         <Button variant="contained" onClick={e => submitLogout(e)}>Log out</Button> :
                         <Link to="/signin">
                             <Button variant="contained">Sign In</Button>

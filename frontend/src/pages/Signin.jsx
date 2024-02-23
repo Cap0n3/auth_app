@@ -7,19 +7,18 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SignIn = ({SignInState}) => {
-    const { client, currentUser, setCurrentUser } = useContext(UserContext);
+    const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     // Check if user state is updated and redirect to dashboard
     useEffect(() => {
-        console.log("currentUser: ", currentUser);
-        if (currentUser) {
+        if (isAuthenticated) {
             navigate('/dashboard');
         }
     }
-    , [currentUser]);
+    , [isAuthenticated]);
 
     function submitLogin(e) {
         e.preventDefault();
@@ -30,7 +29,11 @@ const SignIn = ({SignInState}) => {
                 password: password
             }
         ).then(function (res) {
-            setCurrentUser(true);
+            console.log("User is authenticated: ", isAuthenticated);
+            console.log("Current user: ", currentUser);
+            console.log("Response: ", res);
+            setIsAuthenticated(true);
+            //setCurrentUser(res.data);
         });
     }
 

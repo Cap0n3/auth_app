@@ -3,10 +3,11 @@ import Nav from '../components/Common/Navbar';
 import { Outlet } from 'react-router-dom';
 import axios from 'axios';
 
-// Create a user context
+// Create a user context for the entire app
 export const UserContext = createContext(null);
 
 export default function Root() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
 
     // === Axios Configuration === //
@@ -19,18 +20,30 @@ export default function Root() {
         baseURL: 'http://localhost:8000/'
     });
 
+    // Check if the user is authenticated on mount
     useEffect(() => {
         client.get("/api/user")
             .then(function (res) {
-                setCurrentUser(true);
+                setCurrentUser(res.data.user);
+                setIsAuthenticated(true);
             })
             .catch(function (error) {
-                setCurrentUser(false);
+                setIsAuthenticated(false);
             });
     }, []);
 
+    // If state of the user authentication changes, update the user context
+    useEffect(() => {
+        if (isAuthenticated) {
+            client.get("/api/user")
+                .then(function (res) {
+                    setCurrentUser(res.data.user);
+                });
+        }
+    }, [isAuthenticated]);
+
     return (
-        <UserContext.Provider value={{ currentUser, setCurrentUser, client }}>
+        <UserContext.Provider value={{ client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }}>
             <Nav />
             {/* This is where the child routes will be rendered */}
             <Outlet />

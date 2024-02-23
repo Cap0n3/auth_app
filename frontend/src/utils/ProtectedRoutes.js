@@ -9,17 +9,14 @@ import { UserContext } from '../routes/Root';
  * @returns 
  */
 function ProtectedRoute({ element }) {
-    const { currentUser } = useContext(UserContext);
+    const { isAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!currentUser) {
+        if (!isAuthenticated) {
             navigate('/signin');
         }
-    }, [currentUser, navigate]);
-
-    console.log("ProtectedRoute: ", currentUser);
-    console.log("Element: ", element)
+    }, [isAuthenticated, navigate]);
 
     return element;
 }

@@ -1,3 +1,14 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+*.sqlite3
+media
+
+# Backup files # 
+*.bak 
+
 # Logs
 logs
 *.log
@@ -15,6 +26,8 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.history
+*.code-workspace
 .idea
 .DS_Store
 *.suo

@@ -1,11 +1,14 @@
+import '../assets/global.css';
 import { Typography } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
+import Form from '../components/Common/Forms';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { UserContext } from '../routes/Root';
+import { UserContext } from '../routes/root';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/userservice';
+import { Link } from 'react-router-dom';
 
 const SignIn = ({SignInState}) => {
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
@@ -35,39 +38,46 @@ const SignIn = ({SignInState}) => {
     };
 
     return(
-        <div>
-            <Typography variant="h5" gutterBottom>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        }}>
+            <Typography variant="h5" marginBottom={4}>
                 Sign In
             </Typography>
-            <form onSubmit={e => handleLogin(e)}>
-                <FormControl>
-                    <TextField 
-                        id="signup-email" 
-                        label="Email" 
-                        variant="outlined"
-                        value={email} 
-                        onChange={e => setEmail(e.target.value)}
-                    />
-                    <TextField
-                        id="outlined-password-input"
-                        label="Password"
-                        type="password"
-                        autoComplete="current-password"
-                        variant="outlined"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                    >
-                        Sign In
-                    </Button>
-                </FormControl>
-            </form>
-        </div>
+            <Form onSubmit={e => handleLogin(e)}>
+                <TextField 
+                    id="signup-email" 
+                    label="Email" 
+                    variant="outlined"
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)}
+                />
+                <TextField
+                    id="outlined-password-input"
+                    label="Password"
+                    type="password"
+                    autoComplete="current-password"
+                    variant="outlined"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                />
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                >
+                    Sign In
+                </Button>    
+            </Form>
+            <Link to="/signup">
+                <Button variant="text" sx={{ mt: 2 }}>
+                    Not a member ? Sign up now !
+                </Button>
+            </Link>
+        </Box>
     );
 }
 

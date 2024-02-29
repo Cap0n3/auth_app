@@ -3,6 +3,8 @@ import Nav from '../components/Common/Navbar';
 import { Outlet } from 'react-router-dom';
 import axios from 'axios';
 import { checkAuth } from '../services/userservice';
+import Container from '@mui/material/Container';
+import { Box } from '@mui/material';
 
 // Create a user context for the entire app
 export const UserContext = createContext(null);
@@ -21,18 +23,7 @@ export default function Root() {
         baseURL: 'http://localhost:8000/'
     });
 
-    // Check if the user is authenticated on mount
-    // useEffect(() => {
-    //     client.get("/api/user")
-    //         .then(function (res) {
-    //             setCurrentUser(res.data.user);
-    //             setIsAuthenticated(true);
-    //         })
-    //         .catch(function (error) {
-    //             setIsAuthenticated(false);
-    //         });
-    // }, []);
-
+    // Check if user is authenticated on page load
     useEffect(() => {
         checkAuth()
             .then(function (res) {
@@ -58,7 +49,14 @@ export default function Root() {
         <UserContext.Provider value={{ client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }}>
             <Nav />
             {/* This is where the child routes will be rendered */}
-            <Outlet />
+            <Container maxWidth="lg" sx={{ 
+                mt: 4,
+                display: 'flex',
+                justifyContent: 'center',
+                
+            }}>
+                <Outlet />
+            </Container>
         </UserContext.Provider>
     );
 }

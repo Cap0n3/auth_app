@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
+import { Box } from '@mui/system';
 
 export default function Index() {
     return (
-        <div>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 3,
+        }}>
             <Typography variant="h5" gutterBottom>
                 Welcome to the Landing Page
             </Typography>
@@ -14,6 +20,6 @@ export default function Index() {
             <Link to="/signup">
                 <Button variant="contained">Sign Up</Button>
             </Link>
-        </div>
+        </Box>
     );
 }

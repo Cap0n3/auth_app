@@ -3,10 +3,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useContext, useEffect } from 'react';
-import { UserContext } from '../../routes/Root';
+import { UserContext } from '../../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/userservice';
 
@@ -38,17 +36,8 @@ const Nav = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Authentication App
+                        <Link to="/" style={{ textDecoration: 'none', color: 'white' }}>AUTH APP</Link>
                     </Typography>
                     <Typography variant="span" component="div" mr={3}>
                         {isAuthenticated && currentUser ? `Welcome, ${currentUser.username}` : ''}

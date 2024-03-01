@@ -12,7 +12,7 @@ import Alert from '@mui/material/Alert';
 
 const SignUp = () => {
     // Get client from user context object
-    const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const { setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [error, setError] = useState(null);

@@ -16,7 +16,7 @@ import { logout } from '../../services/userservice';
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const Nav = () => {
-    const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
     const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -39,7 +39,7 @@ const Nav = () => {
     }, [isAuthenticated]);
 
     // === USER MENU === //
-    
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };

@@ -13,16 +13,6 @@ export default function Root() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
 
-    // === Axios Configuration === //
-    axios.defaults.xsrfCookieName = 'csrftoken';
-    axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
-    axios.defaults.withCredentials = true;
-
-    // === Axios Client === //
-    const client = axios.create({
-        baseURL: 'http://localhost:8000/'
-    });
-
     // Check if user is authenticated on page load
     useEffect(() => {
         checkAuth()
@@ -46,7 +36,7 @@ export default function Root() {
     }, [isAuthenticated]);
 
     return (
-        <UserContext.Provider value={{ client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }}>
+        <UserContext.Provider value={{ currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated }}>
             <Nav />
             {/* This is where the child routes will be rendered */}
             <Container maxWidth="lg" sx={{ 

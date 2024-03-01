@@ -13,7 +13,7 @@ import { get_error_msg } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 
 const SignIn = ({SignInState}) => {
-    const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const { isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);

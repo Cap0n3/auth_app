@@ -8,7 +8,8 @@ import { UserContext } from '../routes/root';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/userservice';
-import { Link } from 'react-router-dom';
+import { get_error_msg } from '../services/error_handlers';
+import Alert from '@mui/material/Alert';
 
 const SignIn = ({SignInState}) => {
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
@@ -32,10 +33,10 @@ const SignIn = ({SignInState}) => {
             console.log('User logged in:', userData);
             setIsAuthenticated(true);
         } catch (error) {
-            console.log(error.response)
-            let errorMsg = error.response ? error.response.data.error_msg : error.message;
-            console.error('Login failed:', errorMsg);
-            setError(errorMsg);
+            if (error.response.status === 400) {
+                const error_msg = get_error_msg(error.response);
+                setError(error_msg);
+            }
         }
     };
 

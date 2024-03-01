@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import { UserContext } from '../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../services/userservice';
+import { get_error_msg } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 
 const SignUp = () => {
@@ -34,10 +35,10 @@ const SignUp = () => {
             setIsAuthenticated(true);
             setCurrentUser(userData);
         } catch (error) {
-            let errorMsg = error.response ? error.response.data.error_msg : error.message;
-            console.error('Registration failed:', errorMsg);
-            console.log(error.response)
-            setError(errorMsg);
+            if (error.response.status === 400) {
+                const error_msg = get_error_msg(error.response);
+                setError(error_msg);
+            }
         }
     }
     

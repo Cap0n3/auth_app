@@ -32,15 +32,22 @@ class UserLogin(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-        data = request.data
-        assert validate_email(data)
-        assert validate_password(data)
-        serializer = UserLoginSerializer(data=data)
-        
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.check_user(data)
-            login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserLoginSerializer(data=request.data)
+
+        # This will raise a ValidationError if inputs are invalid
+        serializer.is_valid(raise_exception=True)
+
+        # Custom method to check if the user exists and the password is correct
+        user = serializer.user_exists(serializer.validated_data)
+
+        # Log the user in
+        login(request, user)
+
+        return Response({
+            'username': user.username,
+            'email': user.email,
+            'message': 'User logged in successfully'
+        }, status=status.HTTP_200_OK)
 
 
 class UserLogout(APIView):

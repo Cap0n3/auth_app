@@ -23,12 +23,13 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
 
-    def check_user(self, clean_data):
-        user = authenticate(
-            username=clean_data["email"], password=clean_data["password"]
-        )
+    def user_exists(self, data):
+        # Check if the user exists and the password is correct
+        user = authenticate(username=data.get('email'), password=data.get('password'))
+
         if not user:
-            raise ValidationError("user not found")
+            raise serializers.ValidationError("Unable to log in with provided credentials.")
+
         return user
 
 

@@ -7,12 +7,14 @@ import Button from '@mui/material/Button';
 import { UserContext } from '../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../services/userservice';
+import Alert from '@mui/material/Alert';
 
 const SignUp = () => {
     // Get client from user context object
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -32,7 +34,10 @@ const SignUp = () => {
             setIsAuthenticated(true);
             setCurrentUser(userData);
         } catch (error) {
-            console.error('Registration failed:', error.message);
+            let errorMsg = error.response ? error.response.data.error_msg : error.message;
+            console.error('Registration failed:', errorMsg);
+            console.log(error.response)
+            setError(errorMsg);
         }
     }
     
@@ -83,7 +88,10 @@ const SignUp = () => {
                     Already have an account? Sign in
                 </Button>
             </Link>
-        </Box>
+            <Box sx={{ width: '100%', mt: 2 }}>
+                {error && <Alert severity="error">{error}</Alert>}
+            </Box>
+        </Box>        
     );
 }
 

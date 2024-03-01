@@ -8,15 +8,15 @@ def custom_validation(data):
     email = data["email"].strip()
     username = data["username"].strip()
     password = data["password"].strip()
-    ##
+    
     if not email or UserModel.objects.filter(email=email).exists():
-        raise ValidationError("choose another email")
-    ##
+        raise ValidationError("Please choose another email, this one is already taken")
+    
     if not password or len(password) < 8:
-        raise ValidationError("choose another password, min 8 characters")
-    ##
+        raise ValidationError("Please choose another password, min 8 characters")
+    
     if not username:
-        raise ValidationError("choose another username")
+        raise ValidationError("Please, choose another username")
     return data
 
 

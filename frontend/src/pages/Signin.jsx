@@ -14,6 +14,7 @@ const SignIn = ({SignInState}) => {
     const { client, currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     // Check if user state is updated and redirect to dashboard
@@ -28,12 +29,13 @@ const SignIn = ({SignInState}) => {
         e.preventDefault();
         try {
             const userData = await login({ email, password });
-            // Handle successful login (e.g., store user data in state or local storage, redirect user, etc.)
             console.log('User logged in:', userData);
             setIsAuthenticated(true);
         } catch (error) {
-            // Handle login failure (e.g., display error message to user, log error, etc.)
-            console.error('Login failed:', error.message);
+            console.log(error.response)
+            let errorMsg = error.response ? error.response.data.error_msg : error.message;
+            console.error('Login failed:', errorMsg);
+            setError(errorMsg);
         }
     };
 
@@ -77,6 +79,9 @@ const SignIn = ({SignInState}) => {
                     Not a member ? Sign up now !
                 </Button>
             </Link>
+            <Box sx={{ width: '100%', mt: 2 }}>
+                {error && <Alert severity="error">{error}</Alert>}
+            </Box>
         </Box>
     );
 }

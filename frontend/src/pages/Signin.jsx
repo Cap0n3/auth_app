@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { get_error_msg } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 
-const SignIn = ({SignInState}) => {
+const SignIn = () => {
     const { isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

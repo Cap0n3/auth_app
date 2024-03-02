@@ -13,7 +13,7 @@ import { UserContext } from '../../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/userservice';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Account', 'Dashboard', 'Logout'];
 
 const Nav = () => {
     const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);

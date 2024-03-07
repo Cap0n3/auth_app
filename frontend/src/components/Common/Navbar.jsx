@@ -12,6 +12,7 @@ import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/userservice';
+import { BASE_URL } from '../../services/userservice';
 
 const settings = ['Account', 'Dashboard', 'Logout'];
 
@@ -35,6 +36,7 @@ const Nav = () => {
         if (isAuthenticated) {
             console.log("User is authenticated: ", isAuthenticated);
             console.log("Current user: ", currentUser);
+            console.log("Image: ", `${BASE_URL}${currentUser.avatar}`);
         }
     }, [isAuthenticated]);
 
@@ -80,7 +82,7 @@ const Nav = () => {
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt="Profile Pic" src="https://picsum.photos/200" />
+                                    <Avatar alt="Profile Pic" src={`${BASE_URL}${currentUser.avatar}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu

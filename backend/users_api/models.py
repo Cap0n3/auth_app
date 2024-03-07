@@ -48,6 +48,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=50, unique=True)
     username = models.CharField(max_length=50)
+    avatar = models.ImageField(upload_to="media/", default="default.png")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)

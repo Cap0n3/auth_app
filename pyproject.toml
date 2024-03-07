@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 django-cors-headers = "^4.3.1"
 djangorestframework = "^3.14.0"
+pillow = "^10.2.0"
 
 
 [build-system]

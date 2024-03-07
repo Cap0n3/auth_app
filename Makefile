@@ -4,12 +4,12 @@ api_app_path = /Users/kim0n0/myDev/3_TESTS/react-dummy/dj_react/backend
 run:
 	poetry run python $(api_app_path)/manage.py runserver
 
-.PHONY: makemigrations
-makemigrations:
+.PHONY: migrations
+migrations:
 	poetry run python $(api_app_path)/manage.py makemigrations
 
-.PHONY: makemigrations-dry-run
-makemigrations-dry-run:
+.PHONY: migrations-dry-run
+migrations-dry-run:
 	poetry run python $(api_app_path)/manage.py makemigrations --dry-run
 
 .PHONY: migrate

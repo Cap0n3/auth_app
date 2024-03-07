@@ -10,12 +10,10 @@ import '@fontsource/roboto/700.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ProtectedRoute from './utils/ProtectedRoutes';
 import Root from './routes/root';
-import Index from './routes';
+import Index from './pages/index';
 import SignUp from './pages/Signup';
 import SignIn from './pages/Signin';
-import Dashboard from './pages/Dashboard';
-
-// import darkTheme from './theme/darktheme';
+import Dashboard from './pages';
 
 
 const router = createBrowserRouter([

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/';
+const BASE_URL = 'http://localhost:8000';
 
 // === Axios Configuration === //
 axios.defaults.xsrfCookieName = 'csrftoken';
@@ -48,4 +48,4 @@ const signup = async (credentials) => {
     }
 };
 
-export { checkAuth, login, logout, signup };
+export { checkAuth, login, logout, signup, BASE_URL };

@@ -48,4 +48,25 @@ const signup = async (credentials) => {
     }
 };
 
-export { checkAuth, login, logout, signup, BASE_URL };
+const updateProfile = async (data) => {
+    try {
+        console.log('Updating profile:', data);
+        const csrfToken = document.cookie.split('=')[1];
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            // Send session cookies with the request
+
+            credentials: 'include', // Necessary to include cookies with the request
+        };
+        
+        const response = await axios.put(`${BASE_URL}/api/user`, data, config);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export { checkAuth, login, logout, signup, updateProfile, BASE_URL };

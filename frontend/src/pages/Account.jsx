@@ -1,11 +1,17 @@
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../routes/root';
 import { Link, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../services/userservice';
 import Form from '../components/Common/Forms';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
+import { updateProfile } from '../services/userservice';
+import { get_error_msg } from '../services/error_handlers';
 
 
 const Account = () => {
@@ -13,13 +19,43 @@ const Account = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [image, setImage] = useState(null);
+    const [avatar, setAvatar] = useState(null);
+
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setImage(file);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log('Submitting form');
+        try {           
+            const userData = await updateProfile({ 
+                email, 
+                username,
+                avatar: image
+            });
+            
+        } catch (error) {
+            // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
+            if (error.response) {
+                const error_msg = get_error_msg(error.response);
+                setError(error_msg);
+            }
+        }
+    }
 
     // If user is already authenticated, populate email and username fields
     useEffect(() => {
+        console.log('User is authenticated:', isAuthenticated)
+        console.log('Current user:', currentUser)
         if (isAuthenticated) {
             setEmail(currentUser.email);
             setUsername(currentUser.username);
+            setAvatar(currentUser.avatar);
         }
     }, []);
 
@@ -32,29 +68,43 @@ const Account = () => {
             <Typography variant="h5" marginBottom={4}>
                 Account
             </Typography>
-            <Form onSubmit={e => handleRegistration(e)}>
-                <TextField 
-                    id="signup-email" 
-                    label="Email" 
+
+            <Form onSubmit={e => handleSubmit(e)}>
+                <Stack direction="column" alignItems="center" spacing={2}>
+                    {/* {currentUser.avatar && <Avatar src={BASE_URL + currentUser.avatar} sx={{ width: 100, height: 100 }} />} */}
+                    {image ? <Avatar src={URL.createObjectURL(image)} sx={{ width: 100, height: 100 }} /> : <Avatar src={BASE_URL + avatar} sx={{ width: 100, height: 100 }} />}
+                    <input
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        id="raised-button-file"
+                        multiple
+                        type="file"
+                        onChange={handleImageChange}
+                    />
+                    <label htmlFor="raised-button-file">
+                        <Button variant="contained" component="span">
+                            Upload Image
+                        </Button>
+                    </label>
+                </Stack>
+
+                <Typography variant="h6" align='center' marginTop={4} marginBottom={4}>
+                    Personal Information
+                </Typography>
+
+                <TextField
+                    id="signup-email"
+                    label="Email"
                     variant="outlined"
-                    value={email} 
+                    value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
-                <TextField 
-                    id="signup-username" 
-                    label="Username" 
+                <TextField
+                    id="signup-username"
+                    label="Username"
                     variant="outlined"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
-                />
-                <TextField
-                    id="outlined-password-input"
-                    label="Password"
-                    type="password"
-                    autoComplete="current-password"
-                    variant="outlined"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
                 />
                 <Button
                     type="submit"

@@ -158,6 +158,5 @@ CORS_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-
 # Allow credentials (cookies) to be sent
 CORS_ALLOW_CREDENTIALS = True

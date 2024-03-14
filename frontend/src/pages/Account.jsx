@@ -36,7 +36,7 @@ const Account = () => {
             const userData = await updateProfile({ 
                 email, 
                 username,
-                avatar: image
+                // avatar: image
             });
             
         } catch (error) {

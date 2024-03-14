@@ -37,7 +37,8 @@ const SignIn = () => {
             setIsAuthenticated(true);
             navigate('/dashboard');
         } catch (error) {
-            if (error.response.status === 400) {
+            // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
+            if (error.response) {
                 const error_msg = get_error_msg(error.response);
                 setError(error_msg);
             }

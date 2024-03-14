@@ -1,1 +1,1 @@
-A simple and robust auth app built with React and Django Rest Framework, showcasing straightforward user authentication.
+A simple and robust session based auth app built with React and Django Rest Framework, showcasing straightforward user authentication.

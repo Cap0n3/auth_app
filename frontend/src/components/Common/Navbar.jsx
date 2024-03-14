@@ -53,12 +53,30 @@ const Nav = () => {
     const handleMenuClick = (setting) => {
         console.log('Setting clicked:', setting);
 
-        if (setting === 'Dashboard') {
-            navigate('/dashboard');
-        }
+        // if (setting === 'Dashboard') {
+        //     navigate('/dashboard');
+        // }
 
-        if (setting === 'Logout') {
-            handleLogout();
+        // if (setting === 'Logout') {
+        //     handleLogout();
+        // }
+
+        // if (setting === 'Account') {
+        //     navigate('/account');
+        // }
+
+        switch (setting) {
+            case 'Dashboard':
+                navigate('/dashboard');
+                break;
+            case 'Logout':
+                handleLogout();
+                break;
+            case 'Account':
+                navigate('/account');
+                break;
+            default:
+                break;
         }
 
         handleCloseUserMenu();

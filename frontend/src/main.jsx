@@ -13,6 +13,7 @@ import Index from './pages/index';
 import SignUp from './pages/Signup';
 import SignIn from './pages/Signin';
 import Dashboard from './pages/Dashboard';
+import Account from './pages/Account';
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
             {
                 path: "dashboard",
                 element: <ProtectedRoute element={<Dashboard />} />,
+            },
+            {
+                path: "account",
+                element: <ProtectedRoute element={<Account />} />,
             }
         ],
         

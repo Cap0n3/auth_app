@@ -46,6 +46,7 @@ class UserLogin(APIView):
         return Response({
             'username': user.username,
             'email': user.email,
+            'avatar': user.avatar.url,
             'message': 'User logged in successfully'
         }, status=status.HTTP_200_OK)
 

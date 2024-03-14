@@ -12,7 +12,7 @@ import Root from './routes/root';
 import Index from './pages/index';
 import SignUp from './pages/Signup';
 import SignIn from './pages/Signin';
-import Dashboard from './pages';
+import Dashboard from './pages/Dashboard';
 
 
 const router = createBrowserRouter([
@@ -21,7 +21,10 @@ const router = createBrowserRouter([
         element: <Root />,
         errorElement: <div>Not Found 404 !!!</div>,
         children: [
-            { index: true, element: <Index /> },
+            {
+                path: "",
+                element: <Index />,
+            },
             {
                 path: "signup",
                 element: <SignUp />,

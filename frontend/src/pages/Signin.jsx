@@ -13,7 +13,7 @@ import { get_error_msg } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 
 const SignIn = () => {
-    const { isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -22,17 +22,20 @@ const SignIn = () => {
     // Check if user state is updated and redirect to dashboard
     useEffect(() => {
         if (isAuthenticated) {
+            console.log('Sign In page -> User is already authenticated, redirecting to dashboard');
             navigate('/dashboard');
         }
     }
-    , [isAuthenticated]);
+    , [isAuthenticated, currentUser]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const userData = await login({ email, password });
             console.log('User logged in:', userData);
+            setCurrentUser(userData);
             setIsAuthenticated(true);
+            navigate('/dashboard');
         } catch (error) {
             if (error.response.status === 400) {
                 const error_msg = get_error_msg(error.response);

@@ -77,7 +77,7 @@ const Nav = () => {
                     </Typography>
                     
                     {/* === PROFILE AVATAR OR SIGN IN === */}
-                    {isAuthenticated ?
+                    {isAuthenticated && currentUser ?
                         // If user is authenticated, show the user avatar
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">

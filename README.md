@@ -1,0 +1,1 @@
+A simple and robust auth app built with React and Django Rest Framework, showcasing straightforward user authentication.

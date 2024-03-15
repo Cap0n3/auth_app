@@ -8,7 +8,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ProtectedRoute from './utils/ProtectedRoutes';
-import Root from './routes/root';
+import Root from './routes/Root';
 import Index from './pages/index';
 import SignUp from './pages/Signup';
 import SignIn from './pages/Signin';

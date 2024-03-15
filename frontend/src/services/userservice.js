@@ -79,7 +79,7 @@ const updateProfile = async (data) => {
             withCredentials: true,
         };
         
-        const response = await axios.put(`${BASE_URL}/api/user`, data, config);
+        const response = await axios.put(`${BASE_URL}/api/user`, data);
         return response.data;
     } catch (error) {
         throw error;

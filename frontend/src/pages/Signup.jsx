@@ -31,7 +31,6 @@ const SignUp = () => {
         e.preventDefault();
         try {
             const userData = await signup({ email, username, password });
-            console.log('User registered:', userData);
             setIsAuthenticated(true);
             setCurrentUser(userData);
         } catch (error) {

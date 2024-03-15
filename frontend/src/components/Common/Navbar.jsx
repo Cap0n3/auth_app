@@ -32,14 +32,6 @@ const Nav = () => {
         }
     }
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            console.log("User is authenticated: ", isAuthenticated);
-            console.log("Current user: ", currentUser);
-            console.log("Image: ", `${BASE_URL}${currentUser.avatar}`);
-        }
-    }, [isAuthenticated]);
-
     // === USER MENU === //
 
     const handleOpenUserMenu = (event) => {
@@ -51,8 +43,6 @@ const Nav = () => {
     };
 
     const handleMenuClick = (setting) => {
-        console.log('Setting clicked:', setting);
-
         switch (setting) {
             case 'Dashboard':
                 navigate('/dashboard');

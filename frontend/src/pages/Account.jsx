@@ -16,29 +16,34 @@ import { get_error_msg } from '../services/error_handlers';
 
 const Account = () => {
     const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
-    const [email, setEmail] = useState('');
     const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
-    const [image, setImage] = useState(null);
-    const [avatar, setAvatar] = useState(null);
+    const [email, setEmail] = useState('');
+    const [newImage, setNewImage] = useState(null);
+    const [currentAvatar, setCurrAvatar] = useState(null);
+    const [updateSuccess, setUpdateSuccess] = useState(false);
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            setImage(file);
+            setNewImage(file);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting form');
-        try {           
-            const userData = await updateProfile({ 
-                email, 
-                username,
-                // avatar: image
-            });
-            
+        try {
+            let formData = new FormData();            
+            formData.append('email', email);
+            formData.append('username', username);
+            if (newImage) {
+                formData.append('avatar', newImage);
+            }
+
+            const userData = await updateProfile(formData);
+            // Update user context
+            setCurrentUser(userData);
+            setUpdateSuccess(true);
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
@@ -50,12 +55,14 @@ const Account = () => {
 
     // If user is already authenticated, populate email and username fields
     useEffect(() => {
-        console.log('User is authenticated:', isAuthenticated)
-        console.log('Current user:', currentUser)
         if (isAuthenticated) {
             setEmail(currentUser.email);
             setUsername(currentUser.username);
-            setAvatar(currentUser.avatar);
+            setCurrAvatar(currentUser.avatar);
+        }
+
+        return () => {
+            console.log("Unmounting Account component")
         }
     }, []);
 
@@ -72,7 +79,7 @@ const Account = () => {
             <Form onSubmit={e => handleSubmit(e)}>
                 <Stack direction="column" alignItems="center" spacing={2}>
                     {/* {currentUser.avatar && <Avatar src={BASE_URL + currentUser.avatar} sx={{ width: 100, height: 100 }} />} */}
-                    {image ? <Avatar src={URL.createObjectURL(image)} sx={{ width: 100, height: 100 }} /> : <Avatar src={BASE_URL + avatar} sx={{ width: 100, height: 100 }} />}
+                    {newImage ? <Avatar src={URL.createObjectURL(newImage)} sx={{ width: 100, height: 100 }} /> : <Avatar src={BASE_URL + currentAvatar} sx={{ width: 100, height: 100 }} />}
                     <input
                         accept="image/*"
                         style={{ display: 'none' }}
@@ -117,6 +124,7 @@ const Account = () => {
             </Form>
             <Box sx={{ width: '100%', mt: 2 }}>
                 {error && <Alert severity="error">{error}</Alert>}
+                {updateSuccess && <Alert severity="success">Profile updated successfully</Alert>}
             </Box>
         </Box>
     );

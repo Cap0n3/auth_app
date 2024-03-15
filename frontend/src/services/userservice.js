@@ -1,11 +1,13 @@
 import axios from 'axios';
-
+import { getCsrfToken } from '../utils/misc_func';
 const BASE_URL = 'http://localhost:8000';
 
 // === Axios Configuration === //
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.withCredentials = true;
+axios.defaults.headers.put['Content-Type'] = 'multipart/form-data';
+axios.defaults.headers.put['X-CSRFToken'] = getCsrfToken(); // Include CSRF token in PUT request
 
 // === Axios Client === //
 const client = axios.create({
@@ -48,37 +50,9 @@ const signup = async (credentials) => {
     }
 };
 
-const getCsrfToken = () => {
-    const name = 'csrftoken=';
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-};
-
 
 const updateProfile = async (data) => {
     try {
-        console.log('Updating profile:', data);
-        const csrfToken = getCsrfToken();
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            // Send session cookies with the request
-
-            withCredentials: true,
-        };
-        
         const response = await axios.put(`${BASE_URL}/api/user`, data);
         return response.data;
     } catch (error) {

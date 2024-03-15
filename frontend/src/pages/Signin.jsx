@@ -22,7 +22,6 @@ const SignIn = () => {
     // Check if user state is updated and redirect to dashboard
     useEffect(() => {
         if (isAuthenticated) {
-            console.log('Sign In page -> User is already authenticated, redirecting to dashboard');
             navigate('/dashboard');
         }
     }

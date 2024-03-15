@@ -1,10 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import Nav from '../components/Common/Navbar';
 import { Outlet } from 'react-router-dom';
-import axios from 'axios';
 import { checkAuth } from '../services/userservice';
 import Container from '@mui/material/Container';
-import { Box } from '@mui/material';
 
 // Create a user context for the entire app
 export const UserContext = createContext(null);

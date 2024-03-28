@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, UserChangePasswordSerializer
 from rest_framework import permissions, status
 from django.core.exceptions import ValidationError
 from .validations import custom_validation, validate_email, validate_password
@@ -75,3 +75,22 @@ class UserView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UserChangePassword(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+
+    def put(self, request):
+        try:
+            print(request.data)
+            # current_password = request.data.get("current_password")
+            # new_password = request.data.get("new_password")
+            # # Check if the current password is correct
+            # serializer = UserChangePasswordSerializer(data=request.data, context={"request": request})
+            # serializer.is_valid(raise_exception=True)
+            # user = request.user
+            # user.set_password(new_password)
+            return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({"error_msg": e.message}, status=status.HTTP_400_BAD_REQUEST)

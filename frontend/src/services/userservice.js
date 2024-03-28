@@ -60,4 +60,13 @@ const updateProfile = async (data) => {
     }
 };
 
-export { checkAuth, login, logout, signup, updateProfile, BASE_URL };
+const updatePassword = async (data) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/api/user/password`, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export { checkAuth, login, logout, signup, updateProfile, updatePassword, BASE_URL };

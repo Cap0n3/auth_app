@@ -9,17 +9,23 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
-import { updateProfile } from '../services/userservice';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Collapse from '@mui/material/Collapse';
+import { updateProfile, updatePassword } from '../services/userservice';
 import { get_error_msg } from '../services/error_handlers';
 
 
 const Account = () => {
     const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
-    const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [newImage, setNewImage] = useState(null);
     const [currentAvatar, setCurrAvatar] = useState(null);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState(null);
     const [updateSuccess, setUpdateSuccess] = useState(false);
 
     const handleImageChange = (event) => {
@@ -52,6 +58,30 @@ const Account = () => {
         }
     }
 
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        // Check if password and confirm password match
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+        try {
+            let formData = new FormData();
+            formData.append('current_password', currentPassword);
+            formData.append('password', password);
+            const userData = await updatePassword(formData);
+            setUpdateSuccess(true);
+            console.log("Password updated successfully");
+        }
+        catch (error) {
+            // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
+            if (error.response) {
+                const error_msg = get_error_msg(error.response);
+                setError(error_msg);
+            }
+        }
+    }
+
     // If user is already authenticated, populate email and username fields
     useEffect(() => {
         if (isAuthenticated) {
@@ -64,6 +94,17 @@ const Account = () => {
             console.log("Unmounting Account component")
         }
     }, []);
+
+    // Set a timer for success messages
+    useEffect(() => {
+        if (updateSuccess) {
+            console.log("Update success");
+            const timer = setTimeout(() => {
+                setUpdateSuccess(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [updateSuccess]);
 
     return (
         <Box sx={{
@@ -121,9 +162,63 @@ const Account = () => {
                     Save changes
                 </Button>
             </Form>
+
+            <Form onSubmit={e => handlePasswordSubmit(e)}>
+                <Typography variant="h6" align='center' marginTop={4} marginBottom={4}>
+                    Change Password
+                </Typography>
+                <TextField
+                    id="signup-current-password"
+                    label="Current Password"
+                    variant="outlined"
+                    type="password"
+                    onChange={e => setCurrentPassword(e.target.value)}
+                />
+                <TextField
+                    id="signup-password"
+                    label="Password"
+                    variant="outlined"
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                />
+                <TextField
+                    id="signup-confirm-password"
+                    label="Confirm Password"
+                    variant="outlined"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                />
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                >
+                    Change Password
+                </Button>
+            </Form>
             <Box sx={{ width: '100%', mt: 2 }}>
-                {error && <Alert severity="error">{error}</Alert>}
-                {updateSuccess && <Alert severity="success">Profile updated successfully</Alert>}
+                <Collapse in={updateSuccess}>
+                    <Alert severity="success">Profile updated successfully</Alert>
+                </Collapse>
+                <Collapse in={error !== null ? true : false}>
+                    <Alert 
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setError(null);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    }
+                    severity="error">{error}</Alert>
+                </Collapse>
             </Box>
         </Box>
     );

@@ -1,4 +1,4 @@
-api_app_path = /Users/kim0n0/myDev/3_TESTS/react-dummy/dj_react/backend
+api_app_path = /Users/kim0n0/myDev/1_PROJECTS/2_Portfolio/Session_Auth_App/dj_react/backend
 
 .PHONY: run
 run:

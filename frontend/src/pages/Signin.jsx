@@ -11,6 +11,7 @@ import { login } from '../services/userservice';
 import { Link } from 'react-router-dom';
 import { get_error_msg } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
+import { debugLog } from '../utils/debug';
 
 const SignIn = () => {
     const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
@@ -33,6 +34,7 @@ const SignIn = () => {
             const userData = await login({ email, password });
             setCurrentUser(userData);
             setIsAuthenticated(true);
+            debugLog('[SignIn.js] User logged in:', userData);
             navigate('/dashboard');
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages

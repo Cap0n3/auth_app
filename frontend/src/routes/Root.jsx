@@ -17,15 +17,15 @@ export default function Root() {
     // Check if user is authenticated on page load
     useEffect(() => {
         const csrf_token = getCsrfToken();
-        debugLog('Checking authentication...');
-        debugLog('CSRF Token:', csrf_token);
+        debugLog('[Root.js] Checking authentication...');
+        debugLog('[Root.js] CSRF Token:', csrf_token);
 
         checkAuth()
             .then(function (res) {
                 setCurrentUser(res);
                 setIsAuthenticated(true);
                 setCSRFToken(csrf_token);
-                debugLog('User authenticated:', res);
+                debugLog('[Root.js] User authenticated:', res);
             })
             .catch(function (error) {
                 setIsAuthenticated(false);

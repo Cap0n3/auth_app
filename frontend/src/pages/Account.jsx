@@ -14,6 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Collapse from '@mui/material/Collapse';
 import { updateProfile, updatePassword } from '../services/userservice';
 import { get_error_msg } from '../services/error_handlers';
+import { debugLog } from '../utils/debug';
 
 
 const Account = () => {
@@ -27,6 +28,11 @@ const Account = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
     const [updateSuccess, setUpdateSuccess] = useState(false);
+
+    useEffect(() => {
+        debugLog('[Account.jsx] context:', currentUser);
+        debugLog('[Account.jsx] csrfToken:', csrfToken);
+      }, []);
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -88,10 +94,6 @@ const Account = () => {
             setEmail(currentUser.email);
             setUsername(currentUser.username);
             setCurrAvatar(currentUser.avatar);
-        }
-
-        return () => {
-            console.log("Unmounting Account component")
         }
     }, []);
 

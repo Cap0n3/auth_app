@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, UserChangePasswordSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, PasswordUpdateSerializer
 from rest_framework import permissions, status
 from django.core.exceptions import ValidationError
-from .validations import custom_validation, validate_email, validate_password
+from .validations import custom_validation, validate_email
+from django.contrib.auth.password_validation import validate_password
 
 
 class UserRegister(APIView):
@@ -82,15 +83,25 @@ class UserChangePassword(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def put(self, request):
-        try:
-            print(request.data)
-            # current_password = request.data.get("current_password")
-            # new_password = request.data.get("new_password")
-            # # Check if the current password is correct
-            # serializer = UserChangePasswordSerializer(data=request.data, context={"request": request})
-            # serializer.is_valid(raise_exception=True)
-            # user = request.user
-            # user.set_password(new_password)
+        serializer = PasswordUpdateSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            print("Valid data")
+            user = serializer.check_current_password(request.user, serializer.validated_data)
+            #serializer.update(user, serializer.validated_data)
             return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
-        except ValidationError as e:
-            return Response({"error_msg": e.message}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # def put(self, request):
+    #     # Check if the old password is correct
+    #     current_password = request.data.get("current_password")
+    #     if not request.user.check_password(current_password):
+    #         return Response({"error_msg": "Old password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     # Validate the new password
+    #     new_password = request.data.get("password")
+    #     try:
+    #         validated_password = validate_password(new_password)
+    #         request.user.set_password(validated_password)
+    #         request.user.save()
+    #         return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+    #     except ValidationError as e:
+    #         return Response({"error_msg": e.messages}, status=status.HTTP_400_BAD_REQUEST)

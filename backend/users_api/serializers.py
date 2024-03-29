@@ -42,18 +42,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("email", "username", "avatar")
 
 
-class UserChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField()
-    new_password = serializers.CharField()
-
-    def validate_old_password(self, value):
-        user = self.context["request"].user
-
-        if not user.check_password(value):
-            raise ValidationError("Old password is incorrect")
-
-        return value
+class PasswordUpdateSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 
     def validate_new_password(self, value):
+        print("Validating password")
         validate_password(value)
         return value
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['new_password'])
+        instance.save()
+        return instance
+
+    def validate(self, attrs):
+        if not self.instance.check_password(attrs.get('current_password')):
+            raise serializers.ValidationError({"current_password": "Wrong password"})
+        return attrs

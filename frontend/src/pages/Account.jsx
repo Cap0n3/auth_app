@@ -68,7 +68,7 @@ const Account = () => {
         try {
             let formData = new FormData();
             formData.append('current_password', currentPassword);
-            formData.append('password', password);
+            formData.append('new_password', password);
             const userData = await updatePassword(formData);
             setUpdateSuccess(true);
             console.log("Password updated successfully");

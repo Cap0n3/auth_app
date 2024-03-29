@@ -31,7 +31,6 @@ const SignIn = () => {
         e.preventDefault();
         try {
             const userData = await login({ email, password });
-            console.log('User logged in:', userData);
             setCurrentUser(userData);
             setIsAuthenticated(true);
             navigate('/dashboard');

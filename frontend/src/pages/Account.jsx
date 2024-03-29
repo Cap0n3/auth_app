@@ -17,7 +17,7 @@ import { get_error_msg } from '../services/error_handlers';
 
 
 const Account = () => {
-    const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+    const { currentUser, setCurrentUser, isAuthenticated, setIsAuthenticated, csrfToken } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [newImage, setNewImage] = useState(null);
@@ -45,7 +45,7 @@ const Account = () => {
                 formData.append('avatar', newImage);
             }
 
-            const userData = await updateProfile(formData);
+            const userData = await updateProfile(formData, csrfToken);
             // Update user context
             setCurrentUser(userData);
             setUpdateSuccess(true);

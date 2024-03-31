@@ -12,7 +12,7 @@ from django.contrib.auth.password_validation import validate_password
 from .models import AppUser
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
+from django.contrib.auth import update_session_auth_hash
 
 class UserRetrieveView(generics.RetrieveAPIView):
     """
@@ -54,23 +54,45 @@ class UserCreateView(generics.CreateAPIView):
             return Response({"error_msg": e.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserUpdateView(generics.UpdateAPIView):
+# class UserUpdateView(generics.UpdateAPIView):
+#     """
+#     Update the user's information
+#     """
+#     permission_classes = (permissions.IsAuthenticated,)
+#     authentication_classes = (SessionAuthentication,)
+#     serializer_class = UserSerializer
+
+#     def get_object(self):
+#         return self.request.user
+
+#     def put(self, request):
+#         serializer = UserSerializer(request.user, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+class ChangePasswordView(generics.UpdateAPIView):
     """
-    Update the user's information
+    Change the user's password
     """
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
-    serializer_class = UserSerializer
 
-    def get_object(self):
-        return self.request.user
-
-    def put(self, request):
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        if not user.check_password(old_password):
+            if DEBUG:
+                logger.debug(f"Wrong password: {old_password}")
+            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+        logger.info(f"Password updated: {user}")
+        # Update session to prevent logging out the user after changing the password
+        update_session_auth_hash(request, user)
+        return Response({"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK)
 
 
 class UserDeleteView(generics.DestroyAPIView):

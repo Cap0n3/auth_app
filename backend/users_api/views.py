@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model, login, logout
+from backend.logging_config import logger
+from backend.settings import DEBUG
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,6 +23,8 @@ class UserRetrieveView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
+        if DEBUG:
+            logger.debug(f"User logged: {self.request.user}")
         return self.request.user
 
 
@@ -40,11 +44,13 @@ class UserCreateView(generics.CreateAPIView):
             if serializer.is_valid(raise_exception=True):
                 user = serializer.create(clean_data)
                 if user:
+                    logger.info(f"New user created: {user}")
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         except ValidationError as e:
+            logger.error(f"Error creating new user: {e.message}")
             return Response({"error_msg": e.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -65,6 +71,24 @@ class UserUpdateView(generics.UpdateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDeleteView(generics.DestroyAPIView):
+    """
+    Delete the user's account
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def delete(self, request):
+        user = self.get_object()
+        user.delete()
+        logger.info(f"User account deleted: {user}")
+        return Response({"message": "User account deleted successfully"}, status=status.HTTP_200_OK)
 
 
 class UserLogin(APIView):
@@ -90,11 +114,13 @@ class UserLogin(APIView):
 
 class UserLogout(APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = ()
+    authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
+        if DEBUG:
+            logger.debug(f"User logged out: {request.user}")
         logout(request)
-        return Response(status=status.HTTP_200_OK)
+        return Response({"success_msg": "User logged out successfully"}, status=status.HTTP_200_OK)
 
 
 # class UserRegister(APIView):

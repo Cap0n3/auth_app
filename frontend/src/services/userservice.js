@@ -1,10 +1,12 @@
 import axios from 'axios';
+
 const BASE_URL = 'http://localhost:8000';
 
 // === Axios Configuration === //
-// axios.defaults.xsrfCookieName = 'csrftoken';
-// axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true
 
 // === Axios Client === //
 const client = axios.create({
@@ -63,7 +65,7 @@ const updateProfile = async (data, csrf_token) => {
 
 const updatePassword = async (data) => {
     try {
-        const response = await axios.put(`${BASE_URL}/api/user/password`, data);
+        const response = await axios.post(`${BASE_URL}/api/change_password`, data);
         return response.data;
     } catch (error) {
         throw error;

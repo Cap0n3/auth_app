@@ -12,7 +12,6 @@ import { useContext, useState } from 'react';
 import { UserContext } from '../../routes/Root';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/userservice';
-import { BASE_URL } from '../../services/userservice';
 
 const settings = ['Account', 'Dashboard', 'Logout'];
 
@@ -78,7 +77,7 @@ const Nav = () => {
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Open settings">
                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt="Profile Pic" src={`${BASE_URL}${currentUser.avatar}`} />
+                                    <Avatar alt="Profile Pic" src={`${currentUser.avatar}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu

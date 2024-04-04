@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../routes/Root';
-import { BASE_URL } from '../services/userservice';
 import Form from '../components/Common/Forms';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -73,7 +72,7 @@ const Account = () => {
         }
         try {
             let formData = new FormData();
-            formData.append('current_password', currentPassword);
+            formData.append('old_password', currentPassword);
             formData.append('new_password', password);
             const userData = await updatePassword(formData);
             setUpdateSuccess(true);
@@ -91,6 +90,7 @@ const Account = () => {
     // If user is already authenticated, populate email and username fields
     useEffect(() => {
         if (isAuthenticated) {
+            debugLog('[Account.jsx] User is authenticated:', currentUser);
             setEmail(currentUser.email);
             setUsername(currentUser.username);
             setCurrAvatar(currentUser.avatar);
@@ -120,8 +120,7 @@ const Account = () => {
 
             <Form onSubmit={e => handleSubmit(e)}>
                 <Stack direction="column" alignItems="center" spacing={2}>
-                    {/* {currentUser.avatar && <Avatar src={BASE_URL + currentUser.avatar} sx={{ width: 100, height: 100 }} />} */}
-                    {newImage ? <Avatar src={URL.createObjectURL(newImage)} sx={{ width: 100, height: 100 }} /> : <Avatar src={BASE_URL + currentAvatar} sx={{ width: 100, height: 100 }} />}
+                    {newImage ? <Avatar src={URL.createObjectURL(newImage)} sx={{ width: 100, height: 100 }} /> : <Avatar src={currentAvatar} sx={{ width: 100, height: 100 }} />}
                     <input
                         accept="image/*"
                         style={{ display: 'none' }}

@@ -28,3 +28,7 @@ shell:
 .PHONY: createsuperuser
 createsuperuser:
 	poetry run python $(api_app_path)/manage.py createsuperuser
+
+.PHONY: test
+test:
+	poetry run python $(api_app_path)/manage.py test users_api

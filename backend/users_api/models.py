@@ -12,14 +12,12 @@ class AppUserManager(BaseUserManager):
             raise ValueError("A password is required.")
 
         user = self.model(
-            email=self.normalize_email(email),
-            username=username,
-            **extra_fields
+            email=self.normalize_email(email), username=username, **extra_fields
         )
 
         user.set_password(password)
         user.save(using=self._db)
-        
+
         return user
 
     def create_superuser(self, email, username, password=None, **extra_fields):
@@ -27,7 +25,7 @@ class AppUserManager(BaseUserManager):
             raise ValueError("An email is required.")
         if not password:
             raise ValueError("A password is required.")
-        
+
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -40,7 +38,7 @@ class AppUserManager(BaseUserManager):
 
         # Save superuser
         user.save(using=self._db)
-        
+
         return user
 
 

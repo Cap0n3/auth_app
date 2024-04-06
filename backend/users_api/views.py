@@ -16,6 +16,7 @@ class UserRetrieveView(generics.RetrieveAPIView):
     """
     Retrieve the user's information
     """
+
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
     serializer_class = UserSerializer
@@ -30,6 +31,7 @@ class UserCreateView(generics.CreateAPIView):
     """
     Create a new user
     """
+
     permission_classes = (permissions.AllowAny,)
     authentication_classes = ()
     serializer_class = UserSerializer
@@ -46,16 +48,19 @@ class UserCreateView(generics.CreateAPIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 raise ValidationError(serializer.errors)
-        
+
         except ValidationError as e:
             logger.error(f"Error creating new user: {e.messages}")
-            return Response({"error_msg": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error_msg": e.messages}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserUpdateView(generics.UpdateAPIView):
     """
     Update the user's information
     """
+
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
     serializer_class = UserSerializer
@@ -65,10 +70,12 @@ class UserUpdateView(generics.UpdateAPIView):
 
     def put(self, request):
         serializer = UserSerializer(
-            request.user, 
-            data=request.data, 
-            partial=True, 
-            context={'request': request} # Must provide context to get the full URL of the avatar
+            request.user,
+            data=request.data,
+            partial=True,
+            context={
+                "request": request
+            },  # Must provide context to get the full URL of the avatar
         )
         if serializer.is_valid(raise_exception=True):
             logger.info(f"User updated: {request.user}")
@@ -81,6 +88,7 @@ class ChangePasswordView(generics.UpdateAPIView):
     """
     Change the user's password
     """
+
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
 
@@ -91,19 +99,25 @@ class ChangePasswordView(generics.UpdateAPIView):
         if not user.check_password(old_password):
             if DEBUG:
                 logger.debug(f"Wrong password: {old_password}")
-            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"old_password": ["Wrong password."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user.set_password(new_password)
         user.save()
         logger.info(f"Password updated: {user}")
         # Update session to prevent logging out the user after changing the password
         update_session_auth_hash(request, user)
-        return Response({"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK
+        )
 
 
 class UserDeleteView(generics.DestroyAPIView):
     """
     Delete the user's account
     """
+
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
     serializer_class = UserSerializer
@@ -115,7 +129,9 @@ class UserDeleteView(generics.DestroyAPIView):
         user = self.get_object()
         user.delete()
         logger.info(f"User account deleted: {user}")
-        return Response({"message": "User account deleted successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "User account deleted successfully"}, status=status.HTTP_200_OK
+        )
 
 
 class UserLogin(APIView):
@@ -127,15 +143,23 @@ class UserLogin(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
         if not email or not password:
-            return Response({"error_msg": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error_msg": "Email and password are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user = AppUser.objects.filter(email=email).first()
         if not user or not user.check_password(password):
-            return Response({"error_msg": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error_msg": "Invalid email or password"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # Log the user in
         login(request, user)
-        serializer = UserSerializer(user, context={'request': request}) # Must provide context to get the full URL of the avatar
+        serializer = UserSerializer(
+            user, context={"request": request}
+        )  # Must provide context to get the full URL of the avatar
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -144,11 +168,18 @@ class UserLogout(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-        
+
         if request.user.is_authenticated:
             logout(request)
-            if DEBUG: logger.debug(f"User logged out: {request.user}")
-            return Response({"success_msg": "User logged out successfully"}, status=status.HTTP_200_OK)
-        
-        if DEBUG: logger.debug(f"User is not logged in")
-        return Response({"error_msg": "User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)
+            if DEBUG:
+                logger.debug(f"User logged out: {request.user}")
+            return Response(
+                {"success_msg": "User logged out successfully"},
+                status=status.HTTP_200_OK,
+            )
+
+        if DEBUG:
+            logger.debug(f"User is not logged in")
+        return Response(
+            {"error_msg": "User is not logged in"}, status=status.HTTP_400_BAD_REQUEST
+        )

@@ -12,21 +12,23 @@ def custom_validation(data):
     email = data["email"].strip()
     username = data["username"].strip()
     password = data["password"].strip()
-    
+
     if not email or UserModel.objects.filter(email=email).exists():
         raise ValidationError("Please choose another email, this one is already taken")
-    
+
     if not password or len(password) < 8:
         raise ValidationError("Please choose another password, min 8 characters")
-    
+
     if not username:
         raise ValidationError("Please, you must choose a username")
-        
-    username_pattern = r'^[a-zA-Z0-9_.-]+$'
+
+    username_pattern = r"^[a-zA-Z0-9_.-]+$"
 
     if not re.match(username_pattern, username):
-        raise ValidationError("Please choose another username, only letters, numbers, and ._- are allowed")
-    
+        raise ValidationError(
+            "Please choose another username, only letters, numbers, and ._- are allowed"
+        )
+
     return data
 
 

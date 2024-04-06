@@ -1,10 +1,14 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+import re
 
 UserModel = get_user_model()
 
 
 def custom_validation(data):
+    """
+    Custom validation for user creation endpoint
+    """
     email = data["email"].strip()
     username = data["username"].strip()
     password = data["password"].strip()
@@ -16,7 +20,13 @@ def custom_validation(data):
         raise ValidationError("Please choose another password, min 8 characters")
     
     if not username:
-        raise ValidationError("Please, choose another username")
+        raise ValidationError("Please, you must choose a username")
+        
+    username_pattern = r'^[a-zA-Z0-9_.-]+$'
+
+    if not re.match(username_pattern, username):
+        raise ValidationError("Please choose another username, only letters, numbers, and ._- are allowed")
+    
     return data
 
 

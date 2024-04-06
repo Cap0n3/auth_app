@@ -38,18 +38,18 @@ class UserCreateView(generics.CreateAPIView):
         try:
             clean_data = custom_validation(request.data)
             serializer = UserSerializer(data=clean_data)
-            
-            if serializer.is_valid(raise_exception=True):
+
+            if serializer.is_valid():
                 user = serializer.create(clean_data)
                 if user:
                     logger.info(f"New user created: {user}")
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
-            
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                raise ValidationError(serializer.errors)
         
         except ValidationError as e:
-            logger.error(f"Error creating new user: {e.message}")
-            return Response({"error_msg": e.message}, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error creating new user: {e.messages}")
+            return Response({"error_msg": e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserUpdateView(generics.UpdateAPIView):

@@ -95,3 +95,8 @@ class TestUserRetrieveView(APITestCase):
         self.assertEqual(response.data['email'], self.user.email)
         self.assertEqual(response.data['username'], self.user.username)
 
+    def test_not_logged_in(self):
+        response = self.client.get(self.retrieve_url)
+        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+

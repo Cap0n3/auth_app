@@ -53,4 +53,13 @@ class TestUserLogin(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['email'], self.user.email)
 
+    def test_bad_email(self):
+        response = self.client.post(self.login_url, {'email': 'test.com', 'password': 'testpassword'})
+        self.assertEqual(response.data['error_msg'], 'Invalid email or password')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bad_password(self):
+        response = self.client.post(self.login_url, {'email': 'test@test.com', 'password': 'wrongpassword'})
+        self.assertEqual(response.data['error_msg'], 'Invalid email or password')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

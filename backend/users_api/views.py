@@ -144,7 +144,11 @@ class UserLogout(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-        if DEBUG:
-            logger.debug(f"User logged out: {request.user}")
-        logout(request)
-        return Response({"success_msg": "User logged out successfully"}, status=status.HTTP_200_OK)
+        
+        if request.user.is_authenticated:
+            logout(request)
+            if DEBUG: logger.debug(f"User logged out: {request.user}")
+            return Response({"success_msg": "User logged out successfully"}, status=status.HTTP_200_OK)
+        
+        if DEBUG: logger.debug(f"User is not logged in")
+        return Response({"error_msg": "User is not logged in"}, status=status.HTTP_400_BAD_REQUEST)

@@ -63,3 +63,35 @@ class TestUserLogin(APITestCase):
         self.assertEqual(response.data['error_msg'], 'Invalid email or password')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+class TestUserLogout(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(email='test@test.com', username='test', password='testpassword')
+        self.login_url = reverse('login')
+        self.logout_url = reverse('logout')
+
+    def test_logout_success(self):
+        self.client.post(self.login_url, {'email': 'test@test.com', 'password': 'testpassword'})
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.data['success_msg'], 'User logged out successfully')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_not_logged_in(self):
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.data['error_msg'], 'User is not logged in')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class TestUserRetrieveView(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(email='test@test.com', username='test', password='testpassword')
+        self.login_url = reverse('login')
+        self.retrieve_url = reverse('user')
+
+    def test_retrieve_success(self):
+        self.client.post(self.login_url, {'email': 'test@test.com', 'password': 'testpassword'})
+        response = self.client.get(self.retrieve_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], self.user.email)
+        self.assertEqual(response.data['username'], self.user.username)
+

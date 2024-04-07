@@ -174,3 +174,37 @@ class TestUserRetrieveView(APITestCase):
             response.data["detail"], "Authentication credentials were not provided."
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+class TestUserUpdateView(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email=TEST_USER["email"],
+            username=TEST_USER["username"],
+            password=TEST_USER["password"],
+        )
+        self.login_url = reverse("login")
+        self.update_url = reverse("update")
+
+    def test_update_success(self):
+        self.client.post(
+            self.login_url,
+            {"email": TEST_USER["email"], "password": TEST_USER["password"]},
+        )
+        response = self.client.put(
+            self.update_url,
+            {"email": "newemail@gmail.com", "username": "newusername"},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], "newemail@gmail.com")
+        self.assertEqual(response.data["username"], "newusername")
+
+    def test_not_logged_in(self):
+        response = self.client.put(
+            self.update_url,
+            {"email": "newemail@gmail.com", "username": "newusername"},
+        )
+        self.assertEqual(
+            response.data["detail"], "Authentication credentials were not provided."
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

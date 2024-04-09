@@ -29,6 +29,12 @@ shell:
 createsuperuser:
 	poetry run python $(api_app_path)/manage.py createsuperuser
 
-.PHONY: test
-test:
+.PHONY: test-all
+test-all:
 	poetry run python $(api_app_path)/manage.py test users_api
+
+# Launch a specific test case by passing the test case name as an argument
+# Example: make test-case case=test_user_api
+.PHONY: test-case
+test-case:
+	poetry run python $(api_app_path)/manage.py test users_api.tests.$(case)

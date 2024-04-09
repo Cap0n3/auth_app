@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth import get_user_model
 import unittest
 
-TEST_USER = {"email": "test@test.com", "username": "test", "password": "testpassword"}
+TEST_USER = {"email": "test@test.com", "username": "test", "password": "Testpassword2"}
 
 
 class TestUserRegister(APITestCase):
@@ -27,7 +27,7 @@ class TestUserRegister(APITestCase):
                 "password": TEST_USER["password"],
             },
         )
-        self.assertEqual(response.data["error_msg"][0], "Enter a valid email address.")
+        self.assertEqual(response.data["error_msg"]["email"][0], "Enter a valid email address.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_existing_email(self):
@@ -38,8 +38,8 @@ class TestUserRegister(APITestCase):
         )
         response = self.client.post(self.register_url, TEST_USER)
         self.assertEqual(
-            response.data["error_msg"][0],
-            "Please choose another email, this one is already taken",
+            response.data["error_msg"]["email"][0],
+            "app user with this email already exists.",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -53,7 +53,7 @@ class TestUserRegister(APITestCase):
             },
         )
         self.assertEqual(
-            response.data["error_msg"][0], "Please, you must choose a username"
+            response.data["error_msg"]["username"][0], "This field may not be blank."
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -67,7 +67,7 @@ class TestUserRegister(APITestCase):
             },
         )
         self.assertEqual(
-            response.data["error_msg"][0],
+            response.data["error_msg"]["username"][0],
             "Please choose another username, only letters, numbers, and ._- are allowed",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -82,7 +82,7 @@ class TestUserRegister(APITestCase):
             },
         )
         self.assertEqual(
-            response.data["error_msg"][0],
+            response.data["error_msg"]["password"][0],
             "Please choose another password, min 8 characters",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -208,3 +208,76 @@ class TestUserUpdateView(APITestCase):
             response.data["detail"], "Authentication credentials were not provided."
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_bad_email(self):
+        self.client.post(
+            self.login_url,
+            {"email": TEST_USER["email"], "password": TEST_USER["password"]},
+        )
+        response = self.client.put(
+            self.update_url,
+            {"email": "bademail", "username": "newusername"},
+        )
+        self.assertEqual(response.data["error_msg"]["email"][0], "Enter a valid email address.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestChangePasswordView(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email=TEST_USER["email"],
+            username=TEST_USER["username"],
+            password=TEST_USER["password"],
+        )
+        self.login_url = reverse("login")
+        self.change_password_url = reverse("change_password")
+
+    def test_change_password_success(self):
+        self.client.post(
+            self.login_url,
+            {"email": TEST_USER["email"], "password": TEST_USER["password"]},
+        )
+        response = self.client.post(
+            self.change_password_url,
+            {"old_password": TEST_USER["password"], "new_password": "Newpassword2"},
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success_msg"], "Password updated successfully")
+
+    def test_not_logged_in(self):
+        response = self.client.put(
+            self.change_password_url,
+            {"old_password": TEST_USER["password"], "new_password": "Newpassword2"},
+        )
+        self.assertEqual(
+            response.data["detail"], "Authentication credentials were not provided."
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_bad_old_password(self):
+        self.client.post(
+            self.login_url,
+            {"email": TEST_USER["email"], "password": TEST_USER["password"]},
+        )
+        response = self.client.post(
+            self.change_password_url,
+            {"old_password": "wrongpassword", "new_password": "Newpassword2"},
+        )
+        self.assertEqual(response.data["error_msg"], "Invalid old password")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bad_new_password(self):
+        self.client.post(
+            self.login_url,
+            {"email": TEST_USER["email"], "password": TEST_USER["password"]},
+        )
+        response = self.client.post(
+            self.change_password_url,
+            {"old_password": TEST_USER["password"], "new_password": "2short"},
+        )
+        self.assertEqual(
+            response.data[0],
+            "Please choose another password, min 8 characters",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

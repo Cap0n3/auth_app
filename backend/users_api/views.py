@@ -6,8 +6,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer
 from rest_framework import permissions, status, generics
-from django.core.exceptions import ValidationError
-from .validations import custom_validation
 from .models import AppUser
 from django.contrib.auth import update_session_auth_hash
 
@@ -37,22 +35,15 @@ class UserCreateView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
     def post(self, request):
-        try:
-            clean_data = custom_validation(request.data)
-            serializer = UserSerializer(data=clean_data)
-
-            if serializer.is_valid():
-                user = serializer.create(clean_data)
-                if user:
-                    logger.info(f"New user created: {user}")
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                raise ValidationError(serializer.errors)
-
-        except ValidationError as e:
-            logger.error(f"Error creating new user: {e.messages}")
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.create(request.data)
+            if user:
+                logger.info(f"New user created: {user}")
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
             return Response(
-                {"error_msg": e.messages}, status=status.HTTP_400_BAD_REQUEST
+                {"error_msg": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -77,11 +68,14 @@ class UserUpdateView(generics.UpdateAPIView):
                 "request": request
             },  # Must provide context to get the full URL of the avatar
         )
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             logger.info(f"User updated: {request.user}")
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {"error_msg": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -98,11 +92,12 @@ class ChangePasswordView(generics.UpdateAPIView):
         new_password = request.data.get("new_password")
         if not user.check_password(old_password):
             if DEBUG:
-                logger.debug(f"Wrong password: {old_password}")
+                logger.debug(f"Invalid old password: {old_password}")
             return Response(
-                {"old_password": ["Wrong password."]},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"error_msg": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST
             )
+        # Validate the new password with my custom validation
+        UserSerializer().validate_password(new_password)
         user.set_password(new_password)
         user.save()
         logger.info(f"Password updated: {user}")
@@ -111,6 +106,7 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(
             {"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK
         )
+        
 
 
 class UserDeleteView(generics.DestroyAPIView):
@@ -168,7 +164,6 @@ class UserLogout(APIView):
     authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
-
         if request.user.is_authenticated:
             logout(request)
             if DEBUG:

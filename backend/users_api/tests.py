@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth import get_user_model
-import unittest
+
 
 TEST_USER = {"email": "test@test.com", "username": "test", "password": "Testpassword2"}
 
@@ -180,6 +180,7 @@ class TestUserRetrieveView(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+
 class TestUserUpdateView(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -284,4 +285,25 @@ class TestChangePasswordView(APITestCase):
         self.assertEqual(
             response.data["error_msg"]["password"][0], "Please choose another password, min 8 characters"
         )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestPasswordResetView(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email=TEST_USER["email"],
+            username=TEST_USER["username"],
+            password=TEST_USER["password"],
+        )
+        self.reset_password_url = reverse("reset_password")
+
+    def test_reset_password_success(self):
+        response = self.client.post(self.reset_password_url, {"email": TEST_USER["email"]})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success_msg"], "Password reset email sent successfully")
+
+    def test_bad_email(self):
+        response = self.client.post(self.reset_password_url, {"email": "bademail@gmail.com"})
+        self.assertEqual(response.data["error_msg"]["email"][0], "This email is not registered")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

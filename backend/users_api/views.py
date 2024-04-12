@@ -1,6 +1,6 @@
 from django.contrib.auth import login, logout
 from backend.logging_config import logger
-from backend.settings import DEBUG
+from backend.settings import DEBUG, DEV_EMAIL, WEBSITE_URL
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +8,10 @@ from .serializers import UserSerializer
 from rest_framework import permissions, status, generics
 from .models import AppUser
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
 
 
 class UserRetrieveView(generics.RetrieveAPIView):
@@ -116,6 +120,54 @@ class ChangePasswordView(generics.UpdateAPIView):
             {"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK
         )
         
+
+class PasswordResetView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"error_msg": {"email": ["Email is required"]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = AppUser.objects.filter(email=email).first()
+        if not user:
+            return Response(
+                {"error_msg": {"email": ["This email is not registered"]}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Generate a token for the password reset link
+        user_email = DEV_EMAIL if DEBUG else user.email
+        token = default_token_generator.make_token(user)
+        # Send the password reset email
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_link = f'{WEBSITE_URL}/reset-password?token={token}&uid={uid}'
+        try:
+            send_mail(
+                'Password Reset Request',
+                f'Please click on the link to reset your password: {reset_link}',
+                WEBSITE_URL,
+                [user_email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {e}")
+            return Response(
+                {"error_msg": {"email": ["Failed to send the password reset email"]}},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if DEBUG:
+            logger.debug(f"Password reset email sent to: {user_email}")
+            logger.debug(f"Reset link: {reset_link}")
+        return Response(
+            {"success_msg": "Password reset email sent successfully"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class UserDeleteView(generics.DestroyAPIView):

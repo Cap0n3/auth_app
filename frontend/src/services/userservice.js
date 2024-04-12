@@ -65,7 +65,7 @@ const updateProfile = async (data, csrf_token) => {
 
 const updatePassword = async (data) => {
     try {
-        const response = await axios.post(`${BASE_URL}/api/change_password`, data);
+        const response = await axios.post(`${BASE_URL}/api/change-password`, data);
         return response.data;
     } catch (error) {
         throw error;

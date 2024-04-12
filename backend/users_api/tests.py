@@ -15,8 +15,6 @@ class TestUserRegister(APITestCase):
     def test_register_success(self):
         response = self.client.post(self.register_url, TEST_USER)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["email"], TEST_USER["email"])
-        self.assertEqual(response.data["username"], TEST_USER["username"])
 
     def test_bad_email(self):
         response = self.client.post(
@@ -106,18 +104,25 @@ class TestUserLogin(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["email"], self.user.email)
 
+    def test_no_login_infos(self):
+        response = self.client.post(self.login_url, {"email": "", "password": ""})
+        self.assertEqual(
+            response.data["error_msg"]["login_infos"][0], "Email and password are required"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_bad_email(self):
         response = self.client.post(
             self.login_url, {"email": "test.com", "password": TEST_USER["password"]}
         )
-        self.assertEqual(response.data["error_msg"], "Invalid email or password")
+        self.assertEqual(response.data["error_msg"]["invalid_login"][0], "Invalid email or password")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_bad_password(self):
         response = self.client.post(
             self.login_url, {"email": TEST_USER["email"], "password": "wrongpassword"}
         )
-        self.assertEqual(response.data["error_msg"], "Invalid email or password")
+        self.assertEqual(response.data["error_msg"]["invalid_login"][0], "Invalid email or password")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -143,7 +148,7 @@ class TestUserLogout(APITestCase):
 
     def test_not_logged_in(self):
         response = self.client.post(self.logout_url)
-        self.assertEqual(response.data["error_msg"], "User is not logged in")
+        self.assertEqual(response.data["error_msg"]["logout_error"][0], "User is not logged in")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -264,7 +269,7 @@ class TestChangePasswordView(APITestCase):
             self.change_password_url,
             {"old_password": "wrongpassword", "new_password": "Newpassword2"},
         )
-        self.assertEqual(response.data["error_msg"], "Invalid old password")
+        self.assertEqual(response.data["error_msg"]["password"][0], "Invalid old password")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_bad_new_password(self):
@@ -277,7 +282,6 @@ class TestChangePasswordView(APITestCase):
             {"old_password": TEST_USER["password"], "new_password": "2short"},
         )
         self.assertEqual(
-            response.data[0],
-            "Please choose another password, min 8 characters",
+            response.data["error_msg"]["password"][0], "Please choose another password, min 8 characters"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

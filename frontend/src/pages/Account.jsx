@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Collapse from '@mui/material/Collapse';
 import { updateProfile, updatePassword } from '../services/userservice';
-import { get_error_msg } from '../services/error_handlers';
+import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
 import { debugLog } from '../utils/debug';
 
 
@@ -57,15 +57,17 @@ const Account = () => {
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                const error_msg = get_error_msg(error.response);
-                setError(error_msg);
+                setError(
+                    formatErrorMessages(
+                        extractResponseErrors(error.response)
+                    )
+                );
             }
         }
     }
 
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        // Check if password and confirm password match
         if (password !== confirmPassword) {
             setError("Passwords do not match");
             return;
@@ -76,13 +78,15 @@ const Account = () => {
             formData.append('new_password', password);
             const userData = await updatePassword(formData);
             setUpdateSuccess(true);
-            console.log("Password updated successfully");
         }
         catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                const error_msg = get_error_msg(error.response);
-                setError(error_msg);
+                setError(
+                    formatErrorMessages(
+                        extractResponseErrors(error.response)
+                    )
+                );
             }
         }
     }
@@ -141,14 +145,14 @@ const Account = () => {
                 </Typography>
 
                 <TextField
-                    id="signup-email"
+                    id="account-email"
                     label="Email"
                     variant="outlined"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
                 <TextField
-                    id="signup-username"
+                    id="account-username"
                     label="Username"
                     variant="outlined"
                     value={username}
@@ -169,14 +173,14 @@ const Account = () => {
                     Change Password
                 </Typography>
                 <TextField
-                    id="signup-current-password"
+                    id="account-current-password"
                     label="Current Password"
                     variant="outlined"
                     type="password"
                     onChange={e => setCurrentPassword(e.target.value)}
                 />
                 <TextField
-                    id="signup-password"
+                    id="account-password"
                     label="Password"
                     variant="outlined"
                     type="password"
@@ -184,7 +188,7 @@ const Account = () => {
                     onChange={e => setPassword(e.target.value)}
                 />
                 <TextField
-                    id="signup-confirm-password"
+                    id="account-confirm-password"
                     label="Confirm Password"
                     variant="outlined"
                     type="password"

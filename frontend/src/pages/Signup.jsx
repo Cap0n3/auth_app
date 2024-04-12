@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import { UserContext } from '../routes/Root';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../services/userservice';
-import { get_error_msg } from '../services/error_handlers';
+import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 
 const SignUp = () => {
@@ -18,6 +18,7 @@ const SignUp = () => {
     const [error, setError] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // Check if user state is updated and redirect to dashboard
     useEffect(() => {
@@ -29,15 +30,21 @@ const SignUp = () => {
 
     const handleRegistration = async (e) => {
         e.preventDefault();
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
         try {
-            const userData = await signup({ email, username, password });
-            setIsAuthenticated(true);
-            setCurrentUser(userData);
+            await signup({ email, username, password });
+            navigate('/signin');
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                const error_msg = get_error_msg(error.response);
-                setError(error_msg);
+                setError(
+                    formatErrorMessages(
+                        extractResponseErrors(error.response)
+                    )
+                );
             }
         }
     }
@@ -74,6 +81,14 @@ const SignUp = () => {
                     variant="outlined"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                />
+                <TextField
+                    id="signup-confirm-password"
+                    label="Confirm Password"
+                    variant="outlined"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
                 />
                 <Button
                     type="submit"

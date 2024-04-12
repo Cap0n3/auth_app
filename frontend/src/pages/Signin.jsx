@@ -9,7 +9,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/userservice';
 import { Link } from 'react-router-dom';
-import { get_error_msg } from '../services/error_handlers';
+import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
 import Alert from '@mui/material/Alert';
 import { debugLog } from '../utils/debug';
 
@@ -39,8 +39,11 @@ const SignIn = () => {
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                const error_msg = get_error_msg(error.response);
-                setError(error_msg);
+                setError(
+                    formatErrorMessages(
+                        extractResponseErrors(error.response)
+                    )
+                );
             }
         }
     };

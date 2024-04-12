@@ -40,7 +40,7 @@ class UserCreateView(generics.CreateAPIView):
             user = serializer.create(request.data)
             if user:
                 logger.info(f"New user created: {user}")
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(status=status.HTTP_201_CREATED)
         else:
             return Response(
                 {"error_msg": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -94,10 +94,19 @@ class ChangePasswordView(generics.UpdateAPIView):
             if DEBUG:
                 logger.debug(f"Invalid old password: {old_password}")
             return Response(
-                {"error_msg": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST
+                {"error_msg": {"password" : ["Invalid old password"]}}, status=status.HTTP_400_BAD_REQUEST
             )
         # Validate the new password with my custom validation
-        UserSerializer().validate_password(new_password)
+        serializer = UserSerializer()
+        try:
+            serializer.validate_password(new_password)
+        except Exception as e:
+            if DEBUG:
+                logger.debug(f"Invalid new password: {new_password}")
+            error_msg = e.args # Get the error message (the exception is a tuple)
+            return Response(
+                {"error_msg": {"password": [error_msg[0]]}}, status=status.HTTP_400_BAD_REQUEST
+            )
         user.set_password(new_password)
         user.save()
         logger.info(f"Password updated: {user}")
@@ -140,14 +149,14 @@ class UserLogin(APIView):
         password = request.data.get("password")
         if not email or not password:
             return Response(
-                {"error_msg": "Email and password are required"},
+                {"error_msg": {"login_infos": ["Email and password are required"]}},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         user = AppUser.objects.filter(email=email).first()
         if not user or not user.check_password(password):
             return Response(
-                {"error_msg": "Invalid email or password"},
+                {"error_msg": {"invalid_login": ["Invalid email or password"]}},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -176,5 +185,5 @@ class UserLogout(APIView):
         if DEBUG:
             logger.debug(f"User is not logged in")
         return Response(
-            {"error_msg": "User is not logged in"}, status=status.HTTP_400_BAD_REQUEST
+            {"error_msg": {"logout_error" : ["User is not logged in"]}}, status=status.HTTP_400_BAD_REQUEST
         )

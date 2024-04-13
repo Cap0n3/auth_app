@@ -1,6 +1,12 @@
 from django.contrib.auth import login, logout
 from backend.logging_config import logger
-from backend.settings import DEBUG, OWNER_EMAIL, TEST_EMAIL_SENDER, TEST_EMAIL_RECEIVER, WEBSITE_URL
+from backend.settings import (
+    DEBUG,
+    OWNER_EMAIL,
+    TEST_EMAIL_SENDER,
+    TEST_EMAIL_RECEIVER,
+    WEBSITE_URL,
+)
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -98,7 +104,8 @@ class ChangePasswordView(generics.UpdateAPIView):
             if DEBUG:
                 logger.debug(f"Invalid old password: {old_password}")
             return Response(
-                {"error_msg": {"password" : ["Invalid old password"]}}, status=status.HTTP_400_BAD_REQUEST
+                {"error_msg": {"password": ["Invalid old password"]}},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         # Validate the new password with my custom validation
         serializer = UserSerializer()
@@ -107,9 +114,10 @@ class ChangePasswordView(generics.UpdateAPIView):
         except Exception as e:
             if DEBUG:
                 logger.debug(f"Invalid new password: {new_password}")
-            error_msg = e.args # Get the error message (the exception is a tuple)
+            error_msg = e.args  # Get the error message (the exception is a tuple)
             return Response(
-                {"error_msg": {"password": [error_msg[0]]}}, status=status.HTTP_400_BAD_REQUEST
+                {"error_msg": {"password": [error_msg[0]]}},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         user.set_password(new_password)
         user.save()
@@ -119,7 +127,7 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(
             {"success_msg": "Password updated successfully"}, status=status.HTTP_200_OK
         )
-        
+
 
 class PasswordResetView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -146,11 +154,11 @@ class PasswordResetView(APIView):
         token = default_token_generator.make_token(user)
         # Send the password reset email
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_link = f'{WEBSITE_URL}/reset-password?token={token}&uid={uid}'
+        reset_link = f"{WEBSITE_URL}/reset-password?token={token}&uid={uid}"
         try:
             send_mail(
-                'Password Reset Request',
-                f'Please click on the link to reset your password: {reset_link}',
+                "Password Reset Request",
+                f"Please click on the link to reset your password: {reset_link}",
                 sender,
                 [user_email],
                 fail_silently=False,
@@ -238,5 +246,6 @@ class UserLogout(APIView):
         if DEBUG:
             logger.debug(f"User is not logged in")
         return Response(
-            {"error_msg": {"logout_error" : ["User is not logged in"]}}, status=status.HTTP_400_BAD_REQUEST
+            {"error_msg": {"logout_error": ["User is not logged in"]}},
+            status=status.HTTP_400_BAD_REQUEST,
         )

@@ -1,6 +1,6 @@
 from django.contrib.auth import login, logout
 from backend.logging_config import logger
-from backend.settings import DEBUG, DEV_EMAIL, WEBSITE_URL
+from backend.settings import DEBUG, OWNER_EMAIL, TEST_EMAIL_SENDER, TEST_EMAIL_RECEIVER, WEBSITE_URL
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -141,7 +141,8 @@ class PasswordResetView(APIView):
             )
 
         # Generate a token for the password reset link
-        user_email = DEV_EMAIL if DEBUG else user.email
+        sender = TEST_EMAIL_SENDER if DEBUG else OWNER_EMAIL
+        user_email = TEST_EMAIL_RECEIVER if DEBUG else user.email
         token = default_token_generator.make_token(user)
         # Send the password reset email
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -150,7 +151,7 @@ class PasswordResetView(APIView):
             send_mail(
                 'Password Reset Request',
                 f'Please click on the link to reset your password: {reset_link}',
-                WEBSITE_URL,
+                sender,
                 [user_email],
                 fail_silently=False,
             )
@@ -193,7 +194,7 @@ class UserDeleteView(generics.DestroyAPIView):
 
 class UserLogin(APIView):
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = ()
 
     def post(self, request):
         # Check if the user exists and the password is correct

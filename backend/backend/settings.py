@@ -19,7 +19,10 @@ env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEV_EMAIL = "afra.amaya@tutanota.com"
+OWNER_EMAIL = env("OWNER_EMAIL")
+# Email parameters for testing
+TEST_EMAIL_SENDER = env("TEST_SENDER")
+TEST_EMAIL_RECEIVER = env("TEST_RECEIVER")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -36,12 +39,12 @@ ALLOWED_HOSTS = []
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'dev.aguillin@gmail.com'
-EMAIL_HOST_PASSWORD = env("DEV_EMAIL_PASSWORD")
-EMAIL_USE_TLS = True
-
+EMAIL_HOST = "mail.infomaniak.com"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = TEST_EMAIL_SENDER
+EMAIL_HOST_PASSWORD = env("SENDER_EMAIL_PASSWORD")
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 
 # Application definition
 

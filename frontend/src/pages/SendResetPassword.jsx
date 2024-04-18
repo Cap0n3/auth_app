@@ -4,9 +4,8 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import MessageBox from '../components/Common/MessageBox';
-import { SendResetPasswordEmail } from '../services/userservice';
+import { sendResetPasswordEmail } from '../services/userservice';
 import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
 import { debugLog } from '../utils/debug';
 
@@ -23,7 +22,7 @@ function SendResetPassword() {
         event.preventDefault();
         // TODO: Implement password reset logic here
         debugLog('Sending password reset email to:', email);
-        SendResetPasswordEmail({ email })
+        sendResetPasswordEmail({ email })
             .then(function (res) {
                 setSuccess("Password reset email sent successfully. Check your inbox.");
                 debugLog('Password reset email sent:', res);

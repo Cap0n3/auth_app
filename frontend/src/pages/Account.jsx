@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import Alert from '@mui/material/Alert';
 import MessageBox from '../components/Common/MessageBox';
 import { updateProfile, updatePassword } from '../services/userservice';
 import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
@@ -24,7 +23,7 @@ const Account = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
-    const [updateSuccess, setUpdateSuccess] = useState(false);
+    const [updateSuccess, setUpdateSuccess] = useState(null);
 
     useEffect(() => {
         debugLog('[Account.jsx] context:', currentUser);
@@ -90,7 +89,7 @@ const Account = () => {
     }
 
     const handleCloseMessageBox = () => {
-        setUpdateSuccess(false);
+        setUpdateSuccess(null);
         setError(null);
     }
 
@@ -109,7 +108,7 @@ const Account = () => {
         if (updateSuccess) {
             console.log("Update success");
             const timer = setTimeout(() => {
-                setUpdateSuccess(false);
+                setUpdateSuccess(null);
             }, 3000);
             return () => clearTimeout(timer);
         }

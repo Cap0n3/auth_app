@@ -72,7 +72,7 @@ const updatePassword = async (data) => {
     }
 };
 
-const SendResetPasswordEmail = async (data) => {
+const sendResetPasswordEmail = async (data) => {
     try {
         const response = await axios.post(`${BASE_URL}/api/send-reset-password`, data);
         return response.data;
@@ -81,4 +81,13 @@ const SendResetPasswordEmail = async (data) => {
     }
 };
 
-export { checkAuth, login, logout, signup, updateProfile, updatePassword, SendResetPasswordEmail, BASE_URL };
+const resetUserPassword = async (data) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/api/reset-password`, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export { checkAuth, login, logout, signup, updateProfile, updatePassword, sendResetPasswordEmail, resetUserPassword, BASE_URL };

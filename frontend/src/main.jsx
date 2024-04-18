@@ -12,6 +12,7 @@ import Root from './routes/Root';
 import Index from './pages/index';
 import SignUp from './pages/Signup';
 import SignIn from './pages/Signin';
+import SendResetPassword from './pages/SendResetPassword';
 import Dashboard from './pages/Dashboard';
 import Account from './pages/Account';
 
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             {
                 path: "signin",
                 element: <SignIn />,
+            },
+            {
+                path: "send-reset-password",
+                element: <SendResetPassword />,
             },
             {
                 path: "dashboard",

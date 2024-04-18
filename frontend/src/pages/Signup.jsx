@@ -65,6 +65,8 @@ const SignUp = () => {
                     variant="outlined"
                     value={email} 
                     onChange={e => setEmail(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField 
                     id="signup-username" 
@@ -72,15 +74,19 @@ const SignUp = () => {
                     variant="outlined"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
-                    id="outlined-password-input"
+                    id="signup-password-input"
                     label="Password"
                     type="password"
                     autoComplete="current-password"
                     variant="outlined"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
                     id="signup-confirm-password"
@@ -89,6 +95,8 @@ const SignUp = () => {
                     type="password"
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <Button
                     type="submit"

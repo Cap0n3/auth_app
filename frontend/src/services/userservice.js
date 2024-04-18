@@ -72,4 +72,13 @@ const updatePassword = async (data) => {
     }
 };
 
-export { checkAuth, login, logout, signup, updateProfile, updatePassword, BASE_URL };
+const SendResetPasswordEmail = async (data) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/api/send-reset-password`, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export { checkAuth, login, logout, signup, updateProfile, updatePassword, SendResetPasswordEmail, BASE_URL };

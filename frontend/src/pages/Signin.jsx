@@ -59,20 +59,24 @@ const SignIn = () => {
             </Typography>
             <Form onSubmit={e => handleLogin(e)}>
                 <TextField 
-                    id="signup-email" 
+                    id="signin-email" 
                     label="Email" 
                     variant="outlined"
                     value={email} 
                     onChange={e => setEmail(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
-                    id="outlined-password-input"
+                    id="signin-password-input"
                     label="Password"
                     type="password"
                     autoComplete="current-password"
                     variant="outlined"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <Button
                     type="submit"
@@ -86,6 +90,11 @@ const SignIn = () => {
             <Link to="/signup">
                 <Button variant="text" sx={{ mt: 2 }}>
                     Not a member ? Sign up now !
+                </Button>
+            </Link>
+            <Link to="/send-reset-password">
+                <Button variant="text">
+                    Forgot password ?
                 </Button>
             </Link>
             <Box sx={{ width: '100%', mt: 2 }}>

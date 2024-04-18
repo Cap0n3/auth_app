@@ -8,9 +8,7 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Collapse from '@mui/material/Collapse';
+import MessageBox from '../components/Common/MessageBox';
 import { updateProfile, updatePassword } from '../services/userservice';
 import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
 import { debugLog } from '../utils/debug';
@@ -53,7 +51,7 @@ const Account = () => {
             const userData = await updateProfile(formData, csrfToken);
             // Update user context
             setCurrentUser(userData);
-            setUpdateSuccess(true);
+            setUpdateSuccess("Profile updated successfully");
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
@@ -77,7 +75,7 @@ const Account = () => {
             formData.append('old_password', currentPassword);
             formData.append('new_password', password);
             const userData = await updatePassword(formData);
-            setUpdateSuccess(true);
+            setUpdateSuccess("Password updated successfully");
         }
         catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
@@ -89,6 +87,11 @@ const Account = () => {
                 );
             }
         }
+    }
+
+    const handleCloseMessageBox = () => {
+        setUpdateSuccess(false);
+        setError(null);
     }
 
     // If user is already authenticated, populate email and username fields
@@ -117,6 +120,7 @@ const Account = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            minWidth: 300,
         }}>
             <Typography variant="h5" marginBottom={4}>
                 Account
@@ -150,6 +154,8 @@ const Account = () => {
                     variant="outlined"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
                     id="account-username"
@@ -157,6 +163,8 @@ const Account = () => {
                     variant="outlined"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <Button
                     type="submit"
@@ -178,6 +186,8 @@ const Account = () => {
                     variant="outlined"
                     type="password"
                     onChange={e => setCurrentPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
                     id="account-password"
@@ -186,6 +196,8 @@ const Account = () => {
                     type="password"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <TextField
                     id="account-confirm-password"
@@ -194,6 +206,8 @@ const Account = () => {
                     type="password"
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
+                    fullWidth
+                    required
                 />
                 <Button
                     type="submit"
@@ -204,27 +218,11 @@ const Account = () => {
                     Change Password
                 </Button>
             </Form>
-            <Box sx={{ width: '100%', mt: 2 }}>
-                <Collapse in={updateSuccess}>
-                    <Alert severity="success">Profile updated successfully</Alert>
-                </Collapse>
-                <Collapse in={error !== null ? true : false}>
-                    <Alert 
-                    action={
-                        <IconButton
-                            aria-label="close"
-                            color="inherit"
-                            size="small"
-                            onClick={() => {
-                                setError(null);
-                            }}
-                            >
-                            <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                    }
-                    severity="error">{error}</Alert>
-                </Collapse>
-            </Box>
+            <MessageBox
+                status={{ success: updateSuccess, error: !!error }}
+                message={ error || updateSuccess }
+                onClose={ handleCloseMessageBox }
+            />
         </Box>
     );
 };

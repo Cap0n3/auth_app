@@ -1,9 +1,9 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import React from "react";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 /**
  * Displays a collapsible alert box for success or error messages using Material-UI components.
@@ -28,17 +28,17 @@ import CloseIcon from '@mui/icons-material/Close';
  * };
  *
  * // Usage of MessageBox component:
- * <MessageBox 
- *  status={{ success, error: !!error }} 
+ * <MessageBox
+ *  status={{ success, error: !!error }}
  *  message={ error || success }
- *  onClose={ handleCloseMessageBox } 
+ *  onClose={ handleCloseMessageBox }
  * />
  *
  * @returns {JSX.Element} A Material-UI Box component containing a Collapsible Alert for either success or error messages.
  */
 const MessageBox = ({ status, message, onClose }) => {
     return (
-        <Box sx={{ width: '100%', mt: 2 }}>
+        <Box sx={{ width: "100%", mt: 2 }}>
             <Collapse in={status.success}>
                 <Alert severity="success">{message}</Alert>
             </Collapse>

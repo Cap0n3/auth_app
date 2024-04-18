@@ -1,12 +1,12 @@
-import FormControl from '@mui/material/FormControl';
+import FormControl from "@mui/material/FormControl";
 
 const Form = ({ children, onSubmit }) => {
     return (
-        <form onSubmit={onSubmit} style={{ width: '100%' }}>
-            <FormControl 
+        <form onSubmit={onSubmit} style={{ width: "100%" }}>
+            <FormControl
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     gap: 2,
                 }}
                 fullWidth
@@ -15,6 +15,6 @@ const Form = ({ children, onSubmit }) => {
             </FormControl>
         </form>
     );
-}
+};
 
 export default Form;

@@ -8,7 +8,6 @@ import Dashboard from "../pages/Dashboard";
 import Account from "../pages/Account";
 import ProtectedRoute from "../utils/ProtectedRoutes";
 
-
 const routes = [
     {
         path: "",
@@ -37,7 +36,7 @@ const routes = [
     {
         path: "account",
         element: <ProtectedRoute element={<Account />} />,
-    }
+    },
 ];
 
 export default routes;

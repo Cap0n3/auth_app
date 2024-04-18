@@ -1,11 +1,11 @@
 export const getCsrfToken = () => {
-    const name = 'csrftoken=';
+    const name = "csrftoken=";
     const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    console.log("ca: ", ca)
+    const ca = decodedCookie.split(";");
+    console.log("ca: ", ca);
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
-        while (c.charAt(0) === ' ') {
+        while (c.charAt(0) === " ") {
             c = c.substring(1);
         }
         if (c.indexOf(name) === 0) {

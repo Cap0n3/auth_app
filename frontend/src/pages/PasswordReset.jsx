@@ -1,32 +1,33 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Form from '../components/Common/Forms';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import MessageBox from '../components/Common/MessageBox';
-import { debugLog } from '../utils/debug';
-import { extractResponseErrors, formatErrorMessages } from '../services/error_handlers';
-import { resetUserPassword } from '../services/userservice';
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import Form from "../components/Common/Forms";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import MessageBox from "../components/Common/MessageBox";
+import { debugLog } from "../utils/debug";
+import {
+    extractResponseErrors,
+    formatErrorMessages,
+} from "../services/error_handlers";
+import { resetUserPassword } from "../services/userservice";
 
 const PasswordReset = () => {
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     // Get query parameters from URL
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token');
-    const uid = queryParams.get('uid');
+    const token = queryParams.get("token");
+    const uid = queryParams.get("uid");
 
     if (!token || !uid) {
         return (
             <Box>
-                <Typography variant="h5">
-                    404 - Page Not Found
-                </Typography>
+                <Typography variant="h5">404 - Page Not Found</Typography>
             </Box>
         );
     }
@@ -34,30 +35,26 @@ const PasswordReset = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmNewPassword) {
-            setError('Passwords do not match');
+            setError("Passwords do not match");
             return;
         }
         // TODO: Implement password reset logic here
-        debugLog('Resetting password for:', uid);
+        debugLog("Resetting password for:", uid);
         try {
             let formData = new FormData();
-            formData.append('new_password', newPassword);
-            formData.append('confirm_password', confirmNewPassword);
-            formData.append('uid', uid);
-            formData.append('token', token);
+            formData.append("new_password", newPassword);
+            formData.append("confirm_password", confirmNewPassword);
+            formData.append("uid", uid);
+            formData.append("token", token);
             const response = await resetUserPassword(formData);
-            setSuccess('Password reset successfully');
-            debugLog('Password reset:', response);
+            setSuccess("Password reset successfully");
+            debugLog("Password reset:", response);
         } catch (error) {
             setError(
-                formatErrorMessages(
-                    extractResponseErrors(error.response)
-                )
+                formatErrorMessages(extractResponseErrors(error.response)),
             );
-            console.error('Error resetting password:', error);
+            console.error("Error resetting password:", error);
         }
-
-
     };
 
     const handleCloseMessageBox = () => {
@@ -66,12 +63,14 @@ const PasswordReset = () => {
     };
 
     return (
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            minWidth: 300,
-        }}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                minWidth: 300,
+            }}
+        >
             <Typography variant="h5" marginBottom={4}>
                 Password Reset
             </Typography>
@@ -109,8 +108,8 @@ const PasswordReset = () => {
 
             <MessageBox
                 status={{ success: !!success, error: !!error }}
-                message={ success || error }
-                onClose={ handleCloseMessageBox }
+                message={success || error}
+                onClose={handleCloseMessageBox}
             />
         </Box>
     );

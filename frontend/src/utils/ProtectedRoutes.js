@@ -1,12 +1,12 @@
-import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../routes/Root';
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../routes/Root";
 
 /**
  * Protect the route from unauthorized access
- * 
+ *
  * @param {Object} element  - The element to be protected
- * @returns 
+ * @returns
  */
 function ProtectedRoute({ element }) {
     const { isAuthenticated } = useContext(UserContext);
@@ -14,7 +14,7 @@ function ProtectedRoute({ element }) {
 
     useEffect(() => {
         if (!isAuthenticated) {
-            navigate('/signin');
+            navigate("/signin");
         }
     }, [isAuthenticated, navigate]);
 

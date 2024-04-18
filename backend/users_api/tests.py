@@ -2,6 +2,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 
 TEST_USER = {"email": "test@test.com", "username": "test", "password": "Testpassword2"}
@@ -302,7 +305,7 @@ class TestChangePasswordView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class TestPasswordResetView(APITestCase):
+class TestSendPasswordResetView(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
@@ -310,7 +313,7 @@ class TestPasswordResetView(APITestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
-        self.reset_password_url = reverse("reset_password")
+        self.reset_password_url = reverse("send_reset_password")
 
     def test_reset_password_success(self):
         response = self.client.post(
@@ -327,5 +330,73 @@ class TestPasswordResetView(APITestCase):
         )
         self.assertEqual(
             response.data["error_msg"]["email"][0], "This email is not registered"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestResetPasswordView(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email=TEST_USER["email"],
+            username=TEST_USER["username"],
+            password=TEST_USER["password"],
+        )
+        self.reset_password_url = reverse("reset_password")
+        self.token = default_token_generator.make_token(self.user)
+        self.uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+
+    def test_reset_password_success(self):
+        response = self.client.post(
+            self.reset_password_url,
+            {
+                "token": self.token,
+                "uid": self.uid,
+                "new_password": "Newpassword2"
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["success_msg"], "Password reset successfully")
+
+    def test_bad_token(self):
+        response = self.client.post(
+            self.reset_password_url,
+            {
+                "token": "badtoken",
+                "uid": self.uid,
+                "new_password": "Newpassword2"
+            },
+        )
+        self.assertEqual(
+            response.data["error_msg"]["token"][0], "Invalid token"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bad_uid(self):
+        response = self.client.post(
+            self.reset_password_url,
+            {
+                "token": self.token,
+                "uid": "baduid",
+                "new_password": "Newpassword2"
+            },
+        )
+        self.assertEqual(
+            response.data["error_msg"]["uid"][0], "User not found with this UID"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bad_new_password(self):
+        response = self.client.post(
+            self.reset_password_url,
+            {
+                "token": self.token,
+                "uid": self.uid,
+                "new_password": "2short"
+            },
+        )
+        self.assertEqual(
+            response.data["error_msg"]["password"][0],
+            "Please choose another password, min 8 characters",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

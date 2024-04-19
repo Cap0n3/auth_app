@@ -11,11 +11,12 @@ import {
     formatErrorMessages,
 } from "../services/error_handlers";
 import { debugLog } from "../utils/debug";
+import { ErrorOutlineRounded } from "@mui/icons-material";
 
 function SendResetPassword() {
     const [email, setEmail] = useState("");
-    const [success, setSuccess] = useState(false);
-    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState({ state: false, message: "" });
+    const [error, setError] = useState({ state: false, message: "" });
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -27,22 +28,24 @@ function SendResetPassword() {
         debugLog("Sending password reset email to:", email);
         sendResetPasswordEmail({ email })
             .then(function (res) {
-                setSuccess(
-                    "Password reset email sent successfully. Check your inbox.",
-                );
+                setSuccess({
+                    state: true,
+                    message: "Password reset email sent successfully. Check your inbox.",
+                });
                 debugLog("Password reset email sent:", res);
             })
             .catch(function (error) {
-                setError(
-                    formatErrorMessages(extractResponseErrors(error.response)),
-                );
-                console.error("Error sending password reset email:", error);
+                setError({
+                    state: true,
+                    message: formatErrorMessages(extractResponseErrors(error.response)),
+                });
+                console.error("Error sending password reset email");
             });
     };
 
     const handleCloseMessageBox = () => {
-        setSuccess(false);
-        setError(null);
+        setSuccess({ state: false, message: "" });
+        setError({ state: false, message: "" });
     };
 
     return (
@@ -78,8 +81,8 @@ function SendResetPassword() {
                 </Button>
             </Form>
             <MessageBox
-                status={{ success, error: !!error }}
-                message={error || success}
+                status={{ success: success.state, error: error.state }}
+                message={ success.message || error.message }
                 onClose={handleCloseMessageBox}
             />
         </Box>

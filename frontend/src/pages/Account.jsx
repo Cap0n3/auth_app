@@ -30,8 +30,8 @@ const Account = () => {
     const [currentPassword, setCurrentPassword] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState(null);
-    const [updateSuccess, setUpdateSuccess] = useState(null);
+    const [error, setError] = useState({ state: false, message: "" });
+    const [updateSuccess, setUpdateSuccess] = useState({ state: false, message: "" });
 
     useEffect(() => {
         debugLog("[Account.jsx] context:", currentUser);
@@ -58,13 +58,14 @@ const Account = () => {
             const userData = await updateProfile(formData, csrfToken);
             // Update user context
             setCurrentUser(userData);
-            setUpdateSuccess("Profile updated successfully");
+            setUpdateSuccess({ state: true, message: "Profile updated successfully" });
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                setError(
-                    formatErrorMessages(extractResponseErrors(error.response)),
-                );
+                setError({
+                    state: true,
+                    message: formatErrorMessages(extractResponseErrors(error.response)),
+                });
             }
         }
     };
@@ -72,7 +73,7 @@ const Account = () => {
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError({ state: true, message: "Passwords do not match" });
             return;
         }
         try {
@@ -80,20 +81,21 @@ const Account = () => {
             formData.append("old_password", currentPassword);
             formData.append("new_password", password);
             const userData = await updatePassword(formData);
-            setUpdateSuccess("Password updated successfully");
+            setUpdateSuccess({ state: true, message: "Password updated successfully" });
         } catch (error) {
             // FOR PROD -> Implement switch case to avoid revealing sensitive informations through error messages
             if (error.response) {
-                setError(
-                    formatErrorMessages(extractResponseErrors(error.response)),
-                );
+                setError({
+                    state: true,
+                    message: formatErrorMessages(extractResponseErrors(error.response)),
+                });
             }
         }
     };
 
     const handleCloseMessageBox = () => {
-        setUpdateSuccess(null);
-        setError(null);
+        setUpdateSuccess({ state: false, message: "" });
+        setError({ state: false, message: "" });
     };
 
     // If user is already authenticated, populate email and username fields
@@ -108,14 +110,14 @@ const Account = () => {
 
     // Set a timer for success messages
     useEffect(() => {
-        if (updateSuccess) {
+        if (updateSuccess.state) {
             console.log("Update success");
             const timer = setTimeout(() => {
-                setUpdateSuccess(null);
-            }, 3000);
+                setUpdateSuccess({ state: false, message: "" });
+            }, 6000);
             return () => clearTimeout(timer);
         }
-    }, [updateSuccess]);
+    }, [updateSuccess.state]);
 
     return (
         <Box
@@ -243,8 +245,8 @@ const Account = () => {
                 </Button>
             </Form>
             <MessageBox
-                status={{ success: updateSuccess, error: !!error }}
-                message={error || updateSuccess}
+                status={{ success: updateSuccess.state, error: error.state }}
+                message={ updateSuccess.message || error.message }
                 onClose={handleCloseMessageBox}
             />
         </Box>

@@ -16,8 +16,8 @@ import { resetUserPassword } from "../services/userservice";
 const PasswordReset = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
-    const [success, setSuccess] = useState(null);
-    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState({ state: false, message: "" });
+    const [error, setError] = useState({ state: false, message: "" });
     // Get query parameters from URL
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -35,7 +35,10 @@ const PasswordReset = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmNewPassword) {
-            setError("Passwords do not match");
+            setError({
+                state: true,
+                message: "Passwords do not match",
+            });
             return;
         }
         // TODO: Implement password reset logic here
@@ -47,19 +50,23 @@ const PasswordReset = () => {
             formData.append("uid", uid);
             formData.append("token", token);
             const response = await resetUserPassword(formData);
-            setSuccess("Password reset successfully");
+            setSuccess({
+                state: true,
+                message: "Password reset successfully.",
+            });
             debugLog("Password reset:", response);
         } catch (error) {
-            setError(
-                formatErrorMessages(extractResponseErrors(error.response)),
-            );
-            console.error("Error resetting password:", error);
+            setError({
+                state: true,
+                message: formatErrorMessages(extractResponseErrors(error.response)),
+            });
+            console.error("Error resetting password");
         }
     };
 
     const handleCloseMessageBox = () => {
-        setSuccess(null);
-        setError(null);
+        setSuccess({ state: false, message: "" });
+        setError({ state: false, message: "" });
     };
 
     return (
@@ -107,8 +114,8 @@ const PasswordReset = () => {
             </Form>
 
             <MessageBox
-                status={{ success: !!success, error: !!error }}
-                message={success || error}
+                status={{ success: success.state, error: error.state }}
+                message={ success.message || error.message }
                 onClose={handleCloseMessageBox}
             />
         </Box>
